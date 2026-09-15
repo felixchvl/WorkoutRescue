@@ -1,0 +1,661 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 110;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		662635D9305A0D16004B8473 /* WorkoutRescue Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 662635D8305A0D16004B8473 /* WorkoutRescue Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		662635DA305A0D16004B8473 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 662635CC305A0D16004B8473 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 662635D7305A0D16004B8473;
+			remoteInfo = "WorkoutRescue Watch App";
+		};
+		662635E8305A0D18004B8473 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 662635CC305A0D16004B8473 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 662635D7305A0D16004B8473;
+			remoteInfo = "WorkoutRescue Watch App";
+		};
+		662635F2305A0D18004B8473 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 662635CC305A0D16004B8473 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 662635D7305A0D16004B8473;
+			remoteInfo = "WorkoutRescue Watch App";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		662635FC305A0D18004B8473 /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolder = Product;
+			files = (
+				662635D9305A0D16004B8473 /* WorkoutRescue Watch App.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		662635D2305A0D16004B8473 /* WorkoutRescue.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WorkoutRescue.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		662635D8305A0D16004B8473 /* WorkoutRescue Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "WorkoutRescue Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		662635E7305A0D18004B8473 /* WorkoutRescue Watch AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "WorkoutRescue Watch AppTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		662635F1305A0D18004B8473 /* WorkoutRescue Watch AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "WorkoutRescue Watch AppUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		662635DC305A0D16004B8473 /* WorkoutRescue Watch App */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "WorkoutRescue Watch App";
+			sourceTree = "<group>";
+		};
+		662635EA305A0D18004B8473 /* WorkoutRescue Watch AppTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "WorkoutRescue Watch AppTests";
+			sourceTree = "<group>";
+		};
+		662635F4305A0D18004B8473 /* WorkoutRescue Watch AppUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "WorkoutRescue Watch AppUITests";
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		662635D5305A0D16004B8473 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
+		662635E4305A0D18004B8473 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
+		662635EE305A0D18004B8473 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		662635CB305A0D16004B8473 = {
+			isa = PBXGroup;
+			children = (
+				662635DC305A0D16004B8473 /* WorkoutRescue Watch App */,
+				662635EA305A0D18004B8473 /* WorkoutRescue Watch AppTests */,
+				662635F4305A0D18004B8473 /* WorkoutRescue Watch AppUITests */,
+				662635D3305A0D16004B8473 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		662635D3305A0D16004B8473 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				662635D2305A0D16004B8473 /* WorkoutRescue.app */,
+				662635D8305A0D16004B8473 /* WorkoutRescue Watch App.app */,
+				662635E7305A0D18004B8473 /* WorkoutRescue Watch AppTests.xctest */,
+				662635F1305A0D18004B8473 /* WorkoutRescue Watch AppUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		662635D1305A0D16004B8473 /* WorkoutRescue */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 662635FD305A0D18004B8473 /* Build configuration list for PBXNativeTarget "WorkoutRescue" */;
+			buildPhases = (
+				662635D0305A0D16004B8473 /* Resources */,
+				662635FC305A0D18004B8473 /* Embed Watch Content */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				662635DB305A0D16004B8473 /* PBXTargetDependency */,
+			);
+			name = WorkoutRescue;
+			productName = WorkoutRescue;
+			productReference = 662635D2305A0D16004B8473 /* WorkoutRescue.app */;
+			productType = "com.apple.product-type.application.watchapp2-container";
+		};
+		662635D7305A0D16004B8473 /* WorkoutRescue Watch App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 662635F9305A0D18004B8473 /* Build configuration list for PBXNativeTarget "WorkoutRescue Watch App" */;
+			buildPhases = (
+				662635D4305A0D16004B8473 /* Sources */,
+				662635D5305A0D16004B8473 /* Frameworks */,
+				662635D6305A0D16004B8473 /* Resources */,
+			);
+			buildRules = (
+			);
+			fileSystemSynchronizedGroups = (
+				662635DC305A0D16004B8473 /* WorkoutRescue Watch App */,
+			);
+			name = "WorkoutRescue Watch App";
+			productName = "WorkoutRescue Watch App";
+			productReference = 662635D8305A0D16004B8473 /* WorkoutRescue Watch App.app */;
+			productType = "com.apple.product-type.application";
+		};
+		662635E6305A0D18004B8473 /* WorkoutRescue Watch AppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 66263600305A0D18004B8473 /* Build configuration list for PBXNativeTarget "WorkoutRescue Watch AppTests" */;
+			buildPhases = (
+				662635E3305A0D18004B8473 /* Sources */,
+				662635E4305A0D18004B8473 /* Frameworks */,
+				662635E5305A0D18004B8473 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				662635E9305A0D18004B8473 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				662635EA305A0D18004B8473 /* WorkoutRescue Watch AppTests */,
+			);
+			name = "WorkoutRescue Watch AppTests";
+			productName = "WorkoutRescue Watch AppTests";
+			productReference = 662635E7305A0D18004B8473 /* WorkoutRescue Watch AppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		662635F0305A0D18004B8473 /* WorkoutRescue Watch AppUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 66263603305A0D18004B8473 /* Build configuration list for PBXNativeTarget "WorkoutRescue Watch AppUITests" */;
+			buildPhases = (
+				662635ED305A0D18004B8473 /* Sources */,
+				662635EE305A0D18004B8473 /* Frameworks */,
+				662635EF305A0D18004B8473 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				662635F3305A0D18004B8473 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				662635F4305A0D18004B8473 /* WorkoutRescue Watch AppUITests */,
+			);
+			name = "WorkoutRescue Watch AppUITests";
+			productName = "WorkoutRescue Watch AppUITests";
+			productReference = 662635F1305A0D18004B8473 /* WorkoutRescue Watch AppUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		662635CC305A0D16004B8473 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2700;
+				LastUpgradeCheck = 2700;
+				TargetAttributes = {
+					662635D1305A0D16004B8473 = {
+						CreatedOnToolsVersion = 27.0;
+					};
+					662635D7305A0D16004B8473 = {
+						CreatedOnToolsVersion = 27.0;
+					};
+					662635E6305A0D18004B8473 = {
+						CreatedOnToolsVersion = 27.0;
+						TestTargetID = 662635D7305A0D16004B8473;
+					};
+					662635F0305A0D18004B8473 = {
+						CreatedOnToolsVersion = 27.0;
+						TestTargetID = 662635D7305A0D16004B8473;
+					};
+				};
+			};
+			buildConfigurationList = 662635CF305A0D16004B8473 /* Build configuration list for PBXProject "WorkoutRescue" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 662635CB305A0D16004B8473;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 662635D3305A0D16004B8473 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				662635D1305A0D16004B8473 /* WorkoutRescue */,
+				662635D7305A0D16004B8473 /* WorkoutRescue Watch App */,
+				662635E6305A0D18004B8473 /* WorkoutRescue Watch AppTests */,
+				662635F0305A0D18004B8473 /* WorkoutRescue Watch AppUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		662635D0305A0D16004B8473 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
+		662635D6305A0D16004B8473 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
+		662635E5305A0D18004B8473 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
+		662635EF305A0D18004B8473 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		662635D4305A0D16004B8473 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
+		662635E3305A0D18004B8473 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
+		662635ED305A0D18004B8473 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		662635DB305A0D16004B8473 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 662635D7305A0D16004B8473 /* WorkoutRescue Watch App */;
+			targetProxy = 662635DA305A0D16004B8473 /* PBXContainerItemProxy */;
+		};
+		662635E9305A0D18004B8473 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 662635D7305A0D16004B8473 /* WorkoutRescue Watch App */;
+			targetProxy = 662635E8305A0D18004B8473 /* PBXContainerItemProxy */;
+		};
+		662635F3305A0D18004B8473 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 662635D7305A0D16004B8473 /* WorkoutRescue Watch App */;
+			targetProxy = 662635F2305A0D18004B8473 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		662635F7305A0D18004B8473 /* Debug configuration for PBXProject "WorkoutRescue" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = LJUBJ5GTAT;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		662635F8305A0D18004B8473 /* Release configuration for PBXProject "WorkoutRescue" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = LJUBJ5GTAT;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		662635FA305A0D18004B8473 /* Debug configuration for PBXNativeTarget "WorkoutRescue Watch App" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = LJUBJ5GTAT;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = WorkoutRescue;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKWatchOnly = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.felixchevalier.WorkoutRescue.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 27.0;
+			};
+			name = Debug;
+		};
+		662635FB305A0D18004B8473 /* Release configuration for PBXNativeTarget "WorkoutRescue Watch App" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = LJUBJ5GTAT;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = WorkoutRescue;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKWatchOnly = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.felixchevalier.WorkoutRescue.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				VALIDATE_PRODUCT = YES;
+				WATCHOS_DEPLOYMENT_TARGET = 27.0;
+			};
+			name = Release;
+		};
+		662635FE305A0D18004B8473 /* Debug configuration for PBXNativeTarget "WorkoutRescue" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = LJUBJ5GTAT;
+				INFOPLIST_KEY_CFBundleDisplayName = WorkoutRescue;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.felixchevalier.WorkoutRescue;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		662635FF305A0D18004B8473 /* Release configuration for PBXNativeTarget "WorkoutRescue" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = LJUBJ5GTAT;
+				INFOPLIST_KEY_CFBundleDisplayName = WorkoutRescue;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.felixchevalier.WorkoutRescue;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		66263601305A0D18004B8473 /* Debug configuration for PBXNativeTarget "WorkoutRescue Watch AppTests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = LJUBJ5GTAT;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.felixchevalier.WorkoutRescue-Watch-AppTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/WorkoutRescue Watch App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/WorkoutRescue Watch App";
+				WATCHOS_DEPLOYMENT_TARGET = 27.0;
+			};
+			name = Debug;
+		};
+		66263602305A0D18004B8473 /* Release configuration for PBXNativeTarget "WorkoutRescue Watch AppTests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = LJUBJ5GTAT;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.felixchevalier.WorkoutRescue-Watch-AppTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/WorkoutRescue Watch App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/WorkoutRescue Watch App";
+				VALIDATE_PRODUCT = YES;
+				WATCHOS_DEPLOYMENT_TARGET = 27.0;
+			};
+			name = Release;
+		};
+		66263604305A0D18004B8473 /* Debug configuration for PBXNativeTarget "WorkoutRescue Watch AppUITests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = LJUBJ5GTAT;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.felixchevalier.WorkoutRescue-Watch-AppUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_TARGET_NAME = "WorkoutRescue Watch App";
+				WATCHOS_DEPLOYMENT_TARGET = 27.0;
+			};
+			name = Debug;
+		};
+		66263605305A0D18004B8473 /* Release configuration for PBXNativeTarget "WorkoutRescue Watch AppUITests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = LJUBJ5GTAT;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.felixchevalier.WorkoutRescue-Watch-AppUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_TARGET_NAME = "WorkoutRescue Watch App";
+				VALIDATE_PRODUCT = YES;
+				WATCHOS_DEPLOYMENT_TARGET = 27.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		662635CF305A0D16004B8473 /* Build configuration list for PBXProject "WorkoutRescue" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				662635F7305A0D18004B8473 /* Debug configuration for PBXProject "WorkoutRescue" */,
+				662635F8305A0D18004B8473 /* Release configuration for PBXProject "WorkoutRescue" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		662635F9305A0D18004B8473 /* Build configuration list for PBXNativeTarget "WorkoutRescue Watch App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				662635FA305A0D18004B8473 /* Debug configuration for PBXNativeTarget "WorkoutRescue Watch App" */,
+				662635FB305A0D18004B8473 /* Release configuration for PBXNativeTarget "WorkoutRescue Watch App" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		662635FD305A0D18004B8473 /* Build configuration list for PBXNativeTarget "WorkoutRescue" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				662635FE305A0D18004B8473 /* Debug configuration for PBXNativeTarget "WorkoutRescue" */,
+				662635FF305A0D18004B8473 /* Release configuration for PBXNativeTarget "WorkoutRescue" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		66263600305A0D18004B8473 /* Build configuration list for PBXNativeTarget "WorkoutRescue Watch AppTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				66263601305A0D18004B8473 /* Debug configuration for PBXNativeTarget "WorkoutRescue Watch AppTests" */,
+				66263602305A0D18004B8473 /* Release configuration for PBXNativeTarget "WorkoutRescue Watch AppTests" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		66263603305A0D18004B8473 /* Build configuration list for PBXNativeTarget "WorkoutRescue Watch AppUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				66263604305A0D18004B8473 /* Debug configuration for PBXNativeTarget "WorkoutRescue Watch AppUITests" */,
+				66263605305A0D18004B8473 /* Release configuration for PBXNativeTarget "WorkoutRescue Watch AppUITests" */,
+			);
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 662635CC305A0D16004B8473 /* Project object */;
+	validationLevel = 1;
+}
