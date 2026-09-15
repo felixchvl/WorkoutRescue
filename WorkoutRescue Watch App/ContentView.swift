@@ -8,17 +8,14 @@
 import SwiftUI
 
 struct ContentView: View {
-    var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-        }
-        .padding()
-    }
-}
+    @Environment(AppState.self) private var appState
 
-#Preview {
-    ContentView()
+    var body: some View {
+        TabView {
+            StatusView()
+            WorkoutsView()
+            SettingsView()
+        }
+        .tabViewStyle(.verticalPage)
+    }
 }

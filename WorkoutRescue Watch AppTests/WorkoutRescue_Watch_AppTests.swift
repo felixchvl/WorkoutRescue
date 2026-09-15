@@ -18,8 +18,10 @@ final class WorkoutRescue_Watch_AppTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
-    func testExample() throws {
-        // This is an example of a functional test case.
+    func testJSONSchemaVersion() throws {
+        let export = WorkoutExport(workout: WorkoutExportIdentity(uuid: UUID(), activityTypeRawValue: 1, sourceName: nil, sourceBundleIdentifier: nil), summary: WorkoutExportSummary(startDate: .now, endDate: .now, durationSeconds: 0, totalDistanceMeters: nil, activeEnergyKilocalories: nil), metadata: [:], quantitySamples: [], routes: [])
+        let data = try JSONExporter.export(export)
+        XCTAssertTrue(try XCTUnwrap(String(data: data, encoding: .utf8)).contains("\"schemaVersion\" : 1"))
         // Use XCTAssert and related functions to verify your tests produce the correct results.
         // Any test you write for XCTest can be annotated as throws and async.
         // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
@@ -28,11 +30,9 @@ final class WorkoutRescue_Watch_AppTests: XCTestCase {
         // https://developer.apple.com/documentation/xctest
     }
 
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
+    func testGPXRejectsMissingRoute() throws {
+        let export = WorkoutExport(workout: WorkoutExportIdentity(uuid: UUID(), activityTypeRawValue: 1, sourceName: nil, sourceBundleIdentifier: nil), summary: WorkoutExportSummary(startDate: .now, endDate: .now, durationSeconds: 0, totalDistanceMeters: nil, activeEnergyKilocalories: nil), metadata: [:], quantitySamples: [], routes: [])
+        XCTAssertThrowsError(try GPXExporter.export(export))
     }
 
 }
