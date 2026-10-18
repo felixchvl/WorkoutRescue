@@ -427,7 +427,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = WorkoutRescue;
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "Workout Rescue reads your Apple Watch workout history, routes, and metrics so you can export a recovery archive. It never changes or deletes Health data.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "WorkoutRescue reads your workouts, GPS routes and workout metrics from Apple Health so you can send a copy to a server you choose. It never changes or deletes Health data.";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKWatchOnly = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -462,7 +463,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = WorkoutRescue;
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "Workout Rescue reads your Apple Watch workout history, routes, and metrics so you can export a recovery archive. It never changes or deletes Health data.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "WorkoutRescue reads your workouts, GPS routes and workout metrics from Apple Health so you can send a copy to a server you choose. It never changes or deletes Health data.";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKWatchOnly = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -493,6 +495,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = LJUBJ5GTAT;
 				INFOPLIST_KEY_CFBundleDisplayName = WorkoutRescue;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.felixchevalier.WorkoutRescue;
@@ -511,6 +514,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = LJUBJ5GTAT;
 				INFOPLIST_KEY_CFBundleDisplayName = WorkoutRescue;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.felixchevalier.WorkoutRescue;
@@ -542,7 +546,7 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/WorkoutRescue Watch App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/WorkoutRescue Watch App";
-				WATCHOS_DEPLOYMENT_TARGET = 27.0;
+				WATCHOS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Debug;
 		};
@@ -566,7 +570,7 @@
 				TARGETED_DEVICE_FAMILY = 4;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/WorkoutRescue Watch App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/WorkoutRescue Watch App";
 				VALIDATE_PRODUCT = YES;
-				WATCHOS_DEPLOYMENT_TARGET = 27.0;
+				WATCHOS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Release;
 		};
@@ -588,7 +592,7 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				TEST_TARGET_NAME = "WorkoutRescue Watch App";
-				WATCHOS_DEPLOYMENT_TARGET = 27.0;
+				WATCHOS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Debug;
 		};
@@ -611,7 +615,7 @@
 				TARGETED_DEVICE_FAMILY = 4;
 				TEST_TARGET_NAME = "WorkoutRescue Watch App";
 				VALIDATE_PRODUCT = YES;
-				WATCHOS_DEPLOYMENT_TARGET = 27.0;
+				WATCHOS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Release;
 		};

@@ -1,4 +1,5 @@
 import Foundation
+import Observation
 
 /// What the user asked to send for one workout.
 nonisolated enum ExportSelection: String, Codable, Sendable { case json, gpx, both }
@@ -80,9 +81,10 @@ nonisolated struct WorkoutUploadPipeline: Sendable {
 
 /// Local record of server-confirmed exports, used by "Export All" to avoid unintended duplicates.
 /// Contains only workout UUIDs, digests and dates — no health values.
+@Observable
 final class ExportLedger {
-    private let defaults: UserDefaults
-    private let key: String
+    @ObservationIgnored private let defaults: UserDefaults
+    @ObservationIgnored private let key: String
     private(set) var results: [UUID: WorkoutExportResult] = [:]
 
     init(defaults: UserDefaults = .standard, key: String = "exportLedger.v1") {
