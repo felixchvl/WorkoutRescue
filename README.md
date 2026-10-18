@@ -1,49 +1,74 @@
-# Workout Rescue
+# WorkoutRescue
 
-Workout Rescue is a watch-only, independent watchOS app intended to read and export historical workouts stored in HealthKit on the Apple Watch. It has no iPhone companion target and does not use WatchConnectivity.
+App **Apple Watch indépendante (Watch-only)** pour récupérer les entraînements stockés dans HealthKit sur la montre
+(routes GPS, fréquence cardiaque, puissance, cadence, métadonnées…) et les envoyer directement en HTTPS vers un
+serveur que tu contrôles — sans iPhone, sans WatchConnectivity.
 
-## Non-negotiable safety guarantee
+## Garantie de non-destruction
 
-The app is read-only. It requests **only HealthKit read access** and contains no HealthKit save, delete, workout session, or mutation API. Exporting never marks data as expendable and never changes the original workout, route, samples, metadata, or source.
+- HealthKit en **lecture seule** : `requestAuthorization(toShare: [], read: …)`, uniquement des requêtes
+  (`HKSampleQueryDescriptor`, `HKWorkoutRouteQueryDescriptor`, `HKQuantitySeriesSampleQueryDescriptor`).
+  Aucun `save`, `delete`, `HKWorkoutSession`, `HKWorkoutBuilder` dans le code (`grep` le confirme).
+- Aucune donnée ne quitte la montre sans un geste explicite (boutons Export), et seulement vers l'adresse saisie.
+- Le récepteur n'écrase et ne supprime jamais un fichier.
 
-## Current vertical slice
+## Où trouver quoi
 
-The app targets watchOS 26.0 and includes:
+| Chemin | Contenu |
+|---|---|
+| `WorkoutRescue Watch App/Shared/` | code portable (modèle JSON v2, GPX, client HTTPS, pipeline, registre, démo) — compilé dans l'app **et** testé sur macOS |
+| `WorkoutRescue Watch App/Core/` | HealthKit (lecture seule), Keychain, journal, état de l'app |
+| `WorkoutRescue Watch App/Views/` | écrans SwiftUI watchOS |
+| `Tests/WorkoutRescueCoreTests/` | tests XCTest exécutés par `swift test` (macOS) |
+| `WorkoutRescue Watch AppTests/` | tests spécifiques watchOS/HealthKit (nécessitent un simulateur watchOS ≥ 26) |
+| `receiver/` | serveur de réception Python (stdlib), vérificateur d'intégrité, tests |
+| `scripts/` | `test-all.sh`, `e2e.sh`, `make-icon.swift` |
+| `docs/` | procédure de récupération, schéma JSON, distribution |
+| `AppStore/` | textes FR/EN, mots-clés, politique de confidentialité, notes App Review, checklist |
 
-- independent Watch-only configuration (`WKWatchOnly`);
-- HealthKit entitlement and a clear `NSHealthShareUsageDescription`;
-- direct, read-only authorization on Apple Watch;
-- historical `HKWorkout` query, newest first;
-- workout list and read-only summary/detail display;
-- a bounded in-app diagnostic log which never writes health samples to system logs;
-- mock repository support for UI development without HealthKit data;
-- versioned, deterministic ISO-8601 JSON and isolated GPX 1.1 export models.
+## Écrans
 
-## Planned archive contents
+Dashboard (nombre de workouts, dernier scan, état du récepteur, dernier export) → Workouts (liste du plus récent au
+plus ancien : type, date, durée, distance) → Détail (points GPS, échantillons cardiaques, avertissements, Export
+Workout / JSON / GPX) · Export All (séquentiel, saute les exports confirmés) · Settings (adresse, token, test de
+connexion, mode Démo) · Diagnostics (HealthKit / Export / Réseau).
 
-`WorkoutExport` version 1 carries the workout UUID/activity/source, timestamps, distance and active energy summaries, safely stringified metadata, normalized quantity samples (identifier, timestamp, value and canonical unit), and complete route points. GPX is produced only if at least one route exists; JSON is the archival source of truth.
+## Commandes
 
-## HealthKit types
+```bash
+./scripts/test-all.sh                       # swift test + tests récepteur + bout en bout
+xcodebuild -project WorkoutRescue.xcodeproj -scheme "WorkoutRescue Watch App" \
+  -configuration Release -destination 'generic/platform=watchOS' CODE_SIGNING_ALLOWED=NO build
+xcodebuild archive -project WorkoutRescue.xcodeproj -scheme "WorkoutRescue Watch App" \
+  -destination 'generic/platform=watchOS' -archivePath /tmp/WorkoutRescue.xcarchive CODE_SIGNING_ALLOWED=NO
+```
 
-The read request includes `HKWorkout`, `HKWorkoutRoute`, heart rate, active energy, running/walking distance, cycling distance, running speed/power/stride/vertical oscillation/ground contact time, cycling speed, and cycling cadence. Availability and access are always treated as partial: a missing sample or route is never an error by itself.
+`Package.swift` à la racine sert uniquement de banc de test : il compile `WorkoutRescue Watch App/Shared` pour macOS
+avec la même isolation par défaut (`MainActor`) que la cible Xcode. Ouvrir explicitement `WorkoutRescue.xcodeproj`.
+Le dossier de build SwiftPM doit être hors du dépôt (`--scratch-path`, déjà fait par les scripts) : les attributs
+étendus du dossier Documents font échouer la signature ad hoc du bundle de test.
 
-## Network API (next slice)
+## État de vérification (2026-10-18)
 
-The app will make direct HTTPS requests from watchOS using `URLSession`, with a user-supplied endpoint and bearer token:
+| Élément | Implémenté | Compilé | Testé (macOS / intégration) | Simulateur watchOS | Appareil réel |
+|---|---|---|---|---|---|
+| Liste des HKWorkout (tri récent → ancien) | ✅ | ✅ | — | ❌ runtime absent | ❌ |
+| Routes GPS (tous les lots, contrôle `route.count`) | ✅ | ✅ | logique d'export ✅ ; requête HealthKit non testable hors appareil | ❌ | ❌ |
+| Séries temporelles + expansion des séries | ✅ | ✅ | ❌ (HealthKit) | ❌ | ❌ |
+| JSON v2 (round-trip, µs, NaN, métadonnées typées) | ✅ | ✅ | ✅ 33 tests unitaires | ❌ | ❌ |
+| GPX 1.1 (XML, échappement, multi-routes, points invalides, 30 000 points) | ✅ | ✅ | ✅ | ❌ | ❌ |
+| Client HTTPS (401, 500, timeout, coupure, retry, intégrité) | ✅ | ✅ | ✅ (stubs) + ✅ intégration réelle | ❌ | ❌ |
+| Récepteur + vérification | ✅ | n/a | ✅ 17 tests API + bout en bout | n/a | n/a |
+| UI watchOS | ✅ | ✅ | ❌ | ❌ | ❌ |
+| Archive App Store | structure ✅ | ✅ Release | — | — | signature ❌ (compte inactif) |
 
-`POST /api/workouts/{uuid}/metadata` with `application/json`
+Le simulateur n'a pas pu être utilisé : seuls les runtimes watchOS 11.0/11.5 sont installés, alors que la cible
+minimale est watchOS 26 (le runtime watchOS 26/27, plusieurs Go, n'a pas été téléchargé).
 
-`POST /api/workouts/{uuid}/route` with `application/gpx+xml`
+## Limites connues
 
-No endpoint, token, or health data is sent until the owner expressly uses an export action.
-
-## Validation
-
-The Watch App target builds with Xcode 27 / watchOS 27 SDK at a watchOS 26.0 deployment target for both `arm64` and `arm64_32`. The local Xcode installation is missing its Watch-only Application Stub, so the outer App Store container cannot currently be built or archived; this does not affect the successful compilation of the watch target.
-
-## Apple references
-
-- [Independent watchOS apps](https://developer.apple.com/documentation/watchos-apps/creating-independent-watchos-apps)
-- [HealthKit authorization](https://developer.apple.com/documentation/healthkit/hkhealthstore/requestauthorization%28toshare%3Aread%3Acompletion%3A%29)
-- [HKSampleQuery](https://developer.apple.com/documentation/healthkit/hksamplequery)
-- [HKWorkoutRouteQuery](https://developer.apple.com/documentation/healthkit/hkworkoutroutequery)
+- Non validé sur appareil : autorisation HealthKit et profondeur réelle de l'historique sur une Watch au jumelage
+  cassé ; comportement réseau quand l'écran s'éteint (export au premier plan : garder le poignet levé ; une coupure
+  est rattrapée par les retries et la reprise d'Export All).
+- Données non exportées en v2 : voir `docs/JSON-SCHEMA.md`.
+- Upload en arrière-plan (`URLSession` background) non implémenté.
