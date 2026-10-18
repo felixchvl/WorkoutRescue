@@ -9,7 +9,7 @@ import SwiftUI
 
 @main
 struct WorkoutRescue_Watch_AppApp: App {
-    @State private var appState = AppState(repository: HealthKitService())
+    @State private var appState = AppState(healthRepository: HealthKitService())
 
     var body: some Scene {
         WindowGroup {
