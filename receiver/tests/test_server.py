@@ -174,7 +174,12 @@ class ReceiverTest(unittest.TestCase):
                 "X-WorkoutRescue-SHA256: {}\r\nContent-Length: {}\r\n\r\n").format(UUID, TOKEN, hashlib.sha256(body).hexdigest(), len(body))
         sock.sendall(head.encode() + body[: len(body) // 2])
         sock.shutdown(socket.SHUT_WR)  # connection lost mid-body
-        response = sock.recv(4096)
+        response = b""
+        while True:  # headers and body may arrive in separate packets: read until the server closes
+            chunk = sock.recv(4096)
+            if not chunk:
+                break
+            response += chunk
         sock.close()
         self.assertIn(b"incomplete_body", response)
         self.assertFalse((self.root / UUID / "workout.json").exists())

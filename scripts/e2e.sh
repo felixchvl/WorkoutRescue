@@ -16,8 +16,12 @@ PID=$!
 for _ in 1 2 3 4 5 6 7 8 9 10; do curl -sf "http://127.0.0.1:$PORT/health" >/dev/null 2>&1 && break; sleep 0.3; done
 
 cd "$ROOT"
-WR_E2E_URL="http://127.0.0.1:$PORT" WR_E2E_TOKEN="$TOKEN" WR_E2E_EXPORT_DIR="$WORK/exports" \
-  swift test --scratch-path "${WR_SPM_BUILD:-${TMPDIR:-/tmp}/workoutrescue-spm}" --filter EndToEndTests 2>&1 | grep -E "Test Case|error|Executed" || true
+if ! WR_E2E_URL="http://127.0.0.1:$PORT" WR_E2E_TOKEN="$TOKEN" WR_E2E_EXPORT_DIR="$WORK/exports" \
+  swift test --scratch-path "${WR_SPM_BUILD:-${TMPDIR:-/tmp}/workoutrescue-spm}" --filter EndToEndTests >"$WORK/swift.log" 2>&1; then
+  grep -E "error|failed" "$WORK/swift.log" | head -20; echo "end-to-end Swift tests FAILED"; exit 1
+fi
+grep -E "Test Case .*(passed|skipped)" "$WORK/swift.log"
+if grep -q "skipped" "$WORK/swift.log"; then echo "end-to-end tests were skipped (receiver not reachable?)"; exit 1; fi
 echo "--- receiver/verify.py"
 python3 "$ROOT/receiver/verify.py" "$WORK/exports"
 STATUS=$?

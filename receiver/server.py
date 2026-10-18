@@ -288,18 +288,23 @@ class Handler(BaseHTTPRequestHandler):
                 handle.flush()
                 os.fsync(handle.fileno())
             actual = digest.hexdigest()
+            # Rejected bodies are removed *before* answering, so a client never sees a leftover file.
             if received != length:
                 log.error("incomplete upload %s/%s: %d of %d bytes", workout_uuid, kind, received, length)
+                discard(temp_path)
                 return self.error(400, "incomplete_body", close=True)
             if actual != expected:
                 log.error("sha256 mismatch %s/%s: header %s body %s", workout_uuid, kind, expected, actual)
+                discard(temp_path)
                 return self.error(400, "sha256_mismatch", close=True)
             if kind == "metadata":
                 problem = validate_metadata(temp_path, workout_uuid)
                 if problem:
                     log.error("rejected metadata %s: %s", workout_uuid, problem)
+                    discard(temp_path)
                     return self.error(400, problem, close=True)
             status, relative = store.publish(temp_path, workout_uuid, kind, actual)
+            discard(temp_path)  # the published hard link keeps the data
             store.append_receipt(workout_uuid, {
                 "received_at": datetime.now(timezone.utc).isoformat(), "uuid": workout_uuid, "kind": kind, "status": status,
                 "file": relative, "sha256": actual, "bytes": received, "client": self.client_address[0],
@@ -310,12 +315,17 @@ class Handler(BaseHTTPRequestHandler):
                                                                "sha256": actual, "bytes": received, "path": relative})
         except Exception:  # never leave the client without an answer, never leak details
             log.exception("failed to store %s/%s", workout_uuid, kind)
+            discard(temp_path)
             self.error(500, "storage_error", close=True)
         finally:
-            try:
-                temp_path.unlink()
-            except FileNotFoundError:
-                pass
+            discard(temp_path)
+
+
+def discard(path):
+    try:
+        path.unlink()
+    except FileNotFoundError:
+        pass
 
 
 def validate_metadata(path, workout_uuid):

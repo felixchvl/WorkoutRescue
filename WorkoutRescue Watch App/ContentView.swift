@@ -10,9 +10,12 @@ import SwiftUI
 /// Dashboard: status at a glance, then navigation to the other screens.
 struct ContentView: View {
     @Environment(AppState.self) private var appState
+    @State private var path = NavigationPath()
+
+    enum Screen: Hashable { case workouts, exportAll, settings, diagnostics }
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             List {
                 if appState.demoMode {
                     Label("DEMO MODE – fictional data, not from Apple Health", systemImage: "theatermasks")
@@ -43,13 +46,50 @@ struct ContentView: View {
                         .font(.footnote).foregroundStyle(.secondary)
                 }
 
-                NavigationLink { WorkoutsView() } label: { Label("Workouts", systemImage: "figure.outdoor.cycle") }
-                NavigationLink { ExportAllView() } label: { Label("Export All", systemImage: "square.and.arrow.up.on.square") }
-                NavigationLink { SettingsView() } label: { Label("Settings", systemImage: "gear") }
-                NavigationLink { DiagnosticsView() } label: { Label("Diagnostics", systemImage: "stethoscope") }
+                NavigationLink(value: Screen.workouts) { Label("Workouts", systemImage: "figure.outdoor.cycle") }
+                NavigationLink(value: Screen.exportAll) { Label("Export All", systemImage: "square.and.arrow.up.on.square") }
+                NavigationLink(value: Screen.settings) { Label("Settings", systemImage: "gear") }
+                NavigationLink(value: Screen.diagnostics) { Label("Diagnostics", systemImage: "stethoscope") }
             }
             .navigationTitle("WorkoutRescue")
+            .navigationDestination(for: Screen.self) { screen in
+                switch screen {
+                case .workouts: WorkoutsView()
+                case .exportAll: ExportAllView()
+                case .settings: SettingsView()
+                case .diagnostics: DiagnosticsView()
+                }
+            }
+            .navigationDestination(for: WorkoutSummary.self) { WorkoutDetailView(summary: $0) }
         }
-        .task { await appState.refreshPromptState() }
+        .task {
+            await appState.refreshPromptState()
+            #if DEBUG
+            await openScreenForUITesting()
+            #endif
+        }
     }
 }
+
+#if DEBUG
+extension ContentView {
+    /// Debug builds only: `WR_SCREEN=workouts|detail|exportAll|settings|diagnostics` opens a screen at launch
+    /// so the simulator smoke test can capture every screen without taps. Not compiled into Release.
+    private func openScreenForUITesting() async {
+        guard let screen = ProcessInfo.processInfo.environment["WR_SCREEN"] else { return }
+        switch screen {
+        case "workouts": path.append(Screen.workouts)
+        case "detail":
+            await appState.scan()
+            path.append(Screen.workouts)
+            if let ride = appState.workouts.first(where: { $0.activityTypeRawValue == ActivityTypeNames.cycling }) ?? appState.workouts.first { path.append(ride) }
+        case "exportAll":
+            await appState.scan()
+            path.append(Screen.exportAll)
+        case "settings": path.append(Screen.settings)
+        case "diagnostics": path.append(Screen.diagnostics)
+        default: break
+        }
+    }
+}
+#endif

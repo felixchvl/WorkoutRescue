@@ -55,7 +55,7 @@ Le dossier de build SwiftPM doit être hors du dépôt (`--scratch-path`, déjà
 | Liste des HKWorkout (tri récent → ancien) | ✅ | ✅ | — | ❌ runtime absent | ❌ |
 | Routes GPS (tous les lots, contrôle `route.count`) | ✅ | ✅ | logique d'export ✅ ; requête HealthKit non testable hors appareil | ❌ | ❌ |
 | Séries temporelles + expansion des séries | ✅ | ✅ | ❌ (HealthKit) | ❌ | ❌ |
-| JSON v2 (round-trip, µs, NaN, métadonnées typées) | ✅ | ✅ | ✅ 33 tests unitaires | ❌ | ❌ |
+| JSON v2 (round-trip, µs, NaN, métadonnées typées) | ✅ | ✅ | ✅ 32 tests unitaires | ❌ | ❌ |
 | GPX 1.1 (XML, échappement, multi-routes, points invalides, 30 000 points) | ✅ | ✅ | ✅ | ❌ | ❌ |
 | Client HTTPS (401, 500, timeout, coupure, retry, intégrité) | ✅ | ✅ | ✅ (stubs) + ✅ intégration réelle | ❌ | ❌ |
 | Récepteur + vérification | ✅ | n/a | ✅ 17 tests API + bout en bout | n/a | n/a |

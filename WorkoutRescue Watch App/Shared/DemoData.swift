@@ -14,7 +14,7 @@ nonisolated enum DemoData {
     static let referenceDate = ArchiveDateCoding.date(from: "2026-09-12T07:30:00.000000Z")!
 
     static var summaries: [WorkoutSummary] {
-        [rideUUID, runUUID, indoorRideUUID].compactMap { archive(for: $0, routePointCount: 10) }.map { a in
+        [rideUUID, runUUID, indoorRideUUID].compactMap { archive(for: $0) }.map { a in
             WorkoutSummary(id: a.workout.uuid, activityTypeRawValue: a.workout.activityType.rawValue, startDate: a.workout.startDate,
                            endDate: a.workout.endDate, duration: a.workout.durationSeconds, totalDistanceMeters: a.workout.totalDistance?.value,
                            totalActiveEnergyKilocalories: a.workout.totalEnergyBurned?.value, sourceName: sourceName, isDemoData: true)

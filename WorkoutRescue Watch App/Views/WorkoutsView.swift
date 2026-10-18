@@ -23,7 +23,6 @@ struct WorkoutsView: View {
                                        description: Text("Allow Health access on the main screen, then scan this Apple Watch."))
             }
         }
-        .navigationDestination(for: WorkoutSummary.self) { WorkoutDetailView(summary: $0) }
         .navigationTitle("Workouts")
         .task { if appState.lastScan == nil { await appState.scan() } }
     }
@@ -42,21 +41,19 @@ struct WorkoutDetailView: View {
 
     var body: some View {
         List {
+            // Most important first on a small screen: what was read, then the export actions.
             Section {
                 if summary.isDemoData { Text("DEMO – fictional data").foregroundStyle(.orange) }
-                LabeledContent("Activity", value: summary.activityDisplayName)
-                LabeledContent("Date", value: summary.startDate.formatted(date: .abbreviated, time: .shortened))
-                LabeledContent("Duration", value: summary.durationText)
-                if let distance = summary.distanceText { LabeledContent("Distance", value: distance) }
-                if let energy = summary.totalActiveEnergyKilocalories { LabeledContent("Active energy", value: "\(Int(energy.rounded())) kcal") }
-                if let source = summary.sourceName { LabeledContent("Source", value: source) }
+                Text(summary.startDate.formatted(date: .abbreviated, time: .shortened))
+                Text([summary.durationText, summary.distanceText].compactMap { $0 }.joined(separator: " · "))
             }
+            .font(.footnote)
             Section("Data read") {
                 if let archive {
                     LabeledContent("GPS points", value: "\(archive.totalRoutePointCount)")
-                    LabeledContent("Routes", value: "\(archive.routes.count)")
-                    LabeledContent("Heart rate samples", value: "\(archive.sampleCount(for: "HKQuantityTypeIdentifierHeartRate"))")
+                    LabeledContent("Heart rate", value: "\(archive.sampleCount(for: "HKQuantityTypeIdentifierHeartRate"))")
                     LabeledContent("All samples", value: "\(archive.quantityTypes.reduce(0) { $0 + $1.samples.count })")
+                    LabeledContent("Routes", value: "\(archive.routes.count)")
                     if archive.routes.contains(where: { !$0.isComplete }) {
                         Text("⚠️ A route looks incomplete — see Diagnostics.").foregroundStyle(.orange)
                     }
@@ -79,7 +76,14 @@ struct WorkoutDetailView: View {
                     if isExporting { Text("Keep the screen on until the receiver confirms.").font(.caption2).foregroundStyle(.secondary) }
                 }
             }
-            Section("Identifier") { Text(summary.id.uuidString).font(.caption2).foregroundStyle(.secondary) }
+            Section("Details") {
+                LabeledContent("Activity", value: summary.activityDisplayName)
+                LabeledContent("End", value: summary.endDate.formatted(date: .omitted, time: .shortened))
+                if let energy = summary.totalActiveEnergyKilocalories { LabeledContent("Active energy", value: "\(Int(energy.rounded())) kcal") }
+                if let source = summary.sourceName { LabeledContent("Source", value: source) }
+                Text(summary.id.uuidString).font(.caption2).foregroundStyle(.secondary)
+            }
+            .font(.footnote)
         }
         .navigationTitle(summary.activityDisplayName)
         .task { await load() }
