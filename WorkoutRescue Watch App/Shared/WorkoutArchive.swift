@@ -179,6 +179,8 @@ nonisolated struct RouteExport: Codable, Hashable, Sendable {
     var points: [RoutePointExport]
     /// Set when reading this route failed or ended early; points read so far are kept.
     var error: String?
+    /// How the route was found: `associatedWithWorkout` (normal) or `workoutTimeRange` (no association; recorded during the workout).
+    var association: String? = nil
 
     var isComplete: Bool { error == nil && (expectedPointCount.map { $0 == points.count } ?? true) }
 }

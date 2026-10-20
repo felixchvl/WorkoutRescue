@@ -1,6 +1,11 @@
 import Foundation
 import Observation
 
+struct HealthReadError: LocalizedError {
+    let message: String
+    var errorDescription: String? { message }
+}
+
 @Observable
 final class AppState {
     enum ConnectionStatus: Equatable {
@@ -87,7 +92,7 @@ final class AppState {
             scanError = nil
             diagnostics.add(.info, .healthKit, "Scan: \(workouts.count) readable workout(s)\(demoMode ? " (DEMO data)" : "").")
         } catch {
-            scanError = error.localizedDescription
+            scanError = HealthKitService.userMessage(for: error)
             diagnostics.add(.error, .healthKit, "Workout query failed: \(error.localizedDescription)")
         }
     }
@@ -100,7 +105,7 @@ final class AppState {
             return archive
         } catch {
             diagnostics.add(.error, .healthKit, "Read \(id.uuidString.prefix(8)) failed: \(error.localizedDescription)")
-            throw error
+            throw HealthReadError(message: HealthKitService.userMessage(for: error))
         }
     }
 

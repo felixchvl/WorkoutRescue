@@ -42,6 +42,9 @@ KINDS = {
 }
 UPLOAD_PATH = re.compile(r"^/api/workouts/([0-9A-Fa-f-]{36})/(metadata|route)$")
 HEX64 = re.compile(r"^[0-9a-f]{64}$")
+# Fictional workouts built into the app (DemoData.swift). A demo-only receiver accepts nothing else,
+# so it can be handed to App Review without any real health data ever reaching it.
+DEMO_UUID_PREFIX = "D3E00000-0000-4000-8000-"
 log = logging.getLogger("workoutrescue.receiver")
 
 
@@ -76,7 +79,7 @@ def fsync_dir(path):
 
 
 class Config:
-    def __init__(self, token, export_dir, max_bytes=64 * 1024 * 1024, max_failures=10, lockout_seconds=600):
+    def __init__(self, token, export_dir, max_bytes=64 * 1024 * 1024, max_failures=10, lockout_seconds=600, demo_only=False):
         self.token = normalize_token(token)
         if len(self.token) < 10:
             raise ValueError("WR_TOKEN must contain at least 10 characters (use scripts/gen_token.py).")
@@ -84,6 +87,7 @@ class Config:
         self.max_bytes = int(max_bytes)
         self.max_failures = int(max_failures)
         self.lockout_seconds = int(lockout_seconds)
+        self.demo_only = bool(demo_only)
 
 
 class Store:
@@ -226,7 +230,7 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/api/ping":
             if self.authorized():
                 self.reply(200, {"ok": True, "service": "workoutrescue-receiver", "protocol_version": PROTOCOL_VERSION,
-                                 "max_bytes": self.cfg.max_bytes})
+                                 "max_bytes": self.cfg.max_bytes, "demo_only": self.cfg.demo_only})
             return None
         if path == "/api/workouts":
             if self.authorized():
@@ -246,6 +250,9 @@ class Handler(BaseHTTPRequestHandler):
         except ValueError:
             return self.error(404, "not_found", close=True)
         kind = match.group(2)
+        if self.cfg.demo_only and not workout_uuid.startswith(DEMO_UUID_PREFIX):
+            log.warning("demo-only receiver refused non-demo workout %s", workout_uuid)
+            return self.error(403, "demo_only_receiver", close=True)
         _, _, content_types = KINDS[kind]
         content_type = self.headers.get("Content-Type", "").split(";")[0].strip().lower()
         if content_type not in content_types:
@@ -298,11 +305,11 @@ class Handler(BaseHTTPRequestHandler):
                 discard(temp_path)
                 return self.error(400, "sha256_mismatch", close=True)
             if kind == "metadata":
-                problem = validate_metadata(temp_path, workout_uuid)
+                problem = validate_metadata(temp_path, workout_uuid, self.cfg.demo_only)
                 if problem:
                     log.error("rejected metadata %s: %s", workout_uuid, problem)
                     discard(temp_path)
-                    return self.error(400, problem, close=True)
+                    return self.error(403 if problem == "demo_only_receiver" else 400, problem, close=True)
             status, relative = store.publish(temp_path, workout_uuid, kind, actual)
             discard(temp_path)  # the published hard link keeps the data
             store.append_receipt(workout_uuid, {
@@ -328,7 +335,7 @@ def discard(path):
         pass
 
 
-def validate_metadata(path, workout_uuid):
+def validate_metadata(path, workout_uuid, demo_only=False):
     try:
         with open(path, "rb") as handle:
             document = json.load(handle)
@@ -339,6 +346,8 @@ def validate_metadata(path, workout_uuid):
     inner = document.get("workout") if isinstance(document.get("workout"), dict) else {}
     if str(inner.get("uuid", "")).upper() != workout_uuid:
         return "uuid_mismatch"
+    if demo_only and document.get("isDemoData") is not True:
+        return "demo_only_receiver"
     return None
 
 
@@ -361,6 +370,8 @@ def main(argv=None):
     parser.add_argument("--tls-cert", default=os.environ.get("WR_TLS_CERT"))
     parser.add_argument("--tls-key", default=os.environ.get("WR_TLS_KEY"))
     parser.add_argument("--log-file", default=os.environ.get("WR_LOG_FILE"))
+    parser.add_argument("--demo-only", action="store_true", default=os.environ.get("WR_DEMO_ONLY") == "1",
+                        help="accept only the app's fictional demo workouts (App Review endpoint)")
     args = parser.parse_args(argv)
 
     handlers = [logging.StreamHandler(sys.stderr)]
@@ -370,7 +381,7 @@ def main(argv=None):
 
     token = os.environ.get("WR_TOKEN", "")
     try:
-        cfg = Config(token, args.export_dir, args.max_bytes)
+        cfg = Config(token, args.export_dir, args.max_bytes, demo_only=args.demo_only)
     except ValueError as exc:
         log.error("%s", exc)
         return 2
@@ -382,8 +393,8 @@ def main(argv=None):
         context.load_cert_chain(args.tls_cert, args.tls_key)
         server.socket = context.wrap_socket(server.socket, server_side=True)
         scheme = "https"
-    log.info("WorkoutRescue receiver on %s://%s:%d, storing in %s (max %d bytes)", scheme, args.host, server.server_port,
-             cfg.export_dir, cfg.max_bytes)
+    log.info("WorkoutRescue receiver on %s://%s:%d, storing in %s (max %d bytes)%s", scheme, args.host, server.server_port,
+             cfg.export_dir, cfg.max_bytes, " — DEMO-ONLY mode" if cfg.demo_only else "")
     if scheme == "http" and args.host not in ("127.0.0.1", "localhost", "::1"):
         log.warning("Plain HTTP on a non-loopback address: put an HTTPS proxy/tunnel in front (the watch only speaks HTTPS).")
     try:

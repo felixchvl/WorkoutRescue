@@ -39,13 +39,18 @@ avec unité — **résumés globaux, pas des séries**), `activities` (`HKWorkou
   métadonnées. Si `count > 1` (échantillon « série »), `series[]` contient chaque valeur horodatée lue via
   `HKQuantitySeriesSampleQuery`.
 - Types lus : fréquence cardiaque, énergie active/basale, distances vélo/marche-course/natation,
-  vitesse/puissance/cadence vélo, vitesse/puissance/foulée/oscillation verticale/temps de contact course,
-  pas, étages, mouvements de nage, effort physique. Un type absent n'est pas listé ; un type en erreur est
+  vitesse/puissance/cadence vélo, FTP vélo, vitesse/puissance/foulée/oscillation verticale/temps de contact course,
+  pas, étages, mouvements de nage, effort physique, minutes d'exercice, récupération cardiaque à 1 min,
+  score d'effort (saisi et estimé).
+- Pour la récupération cardiaque et les scores d'effort (enregistrés après la fin ou rattachés par relation), la
+  fenêtre de repli va du début du workout à **fin + 15 min**. Un type absent n'est pas listé ; un type en erreur est
   listé avec `error` et n'empêche jamais l'export du reste.
 
 ## `routes[]`
 
-`uuid`, `startDate`, `endDate`, `expectedPointCount` (= `HKWorkoutRoute.count`), `metadata`, `points[]`, `error`.
+`uuid`, `startDate`, `endDate`, `expectedPointCount` (= `HKWorkoutRoute.count`), `metadata`, `points[]`, `error`,
+`association` (`associatedWithWorkout`, ou `workoutTimeRange` si aucune route n'était associée et qu'une route
+enregistrée pendant le workout, ±5 min, a été trouvée).
 Une route est complète quand `error` est absent et que le nombre de points lus = `expectedPointCount`.
 
 Chaque point conserve les valeurs **brutes** de `CLLocation`, dans l'ordre renvoyé par HealthKit :
@@ -67,7 +72,7 @@ quelles. Aucun lissage, aucune simplification, aucun arrondi.
 ## Ce qui n'est PAS exporté (limites assumées)
 
 L'export n'est pas « lossless » pour tout HealthKit. Non couverts en v2 : séries battement-à-battement
-(`HKHeartbeatSeriesSample`), ECG, zones/efforts (`HKWorkoutEffortRelationship`), score d'effort, types de catégorie,
+(`HKHeartbeatSeriesSample`), ECG, zones, VO₂ max, profondeur/température de l'eau (plongée), types de catégorie,
 pièces jointes, et tout type pour lequel l'app ne demande pas de permission. Les métadonnées dont le type n'a pas de
 correspondance JSON documentée sont conservées sous forme de description textuelle (`unsupported`).
 L'altitude n'existe pas comme type de quantité HealthKit : elle est dans chaque point GPS et dans les métadonnées

@@ -40,6 +40,24 @@ final class HealthKitService: WorkoutRepository {
     }
 }
 
+extension HealthKitService {
+    /// Turns HealthKit errors into an action the user can take on the watch.
+    static func userMessage(for error: Error) -> String {
+        if let hk = error as? HKError {
+            switch hk.code {
+            case .errorDatabaseInaccessible:
+                return "Health data is locked. Wear and unlock your Apple Watch, keep the app open, then try again."
+            case .errorAuthorizationDenied, .errorAuthorizationNotDetermined:
+                return "Health access is missing. Tap Allow Health Access, or enable WorkoutRescue in the Settings app (Health)."
+            case .errorHealthDataUnavailable:
+                return "Apple Health is not available on this device."
+            default: break
+            }
+        }
+        return error.localizedDescription
+    }
+}
+
 enum HealthKitServiceError: LocalizedError {
     case healthDataUnavailable
     case workoutNotFound
@@ -65,7 +83,17 @@ nonisolated final class HealthArchiveReader: @unchecked Sendable {
         .cyclingSpeed, .cyclingPower, .cyclingCadence,
         .runningSpeed, .runningPower, .runningStrideLength, .runningVerticalOscillation, .runningGroundContactTime,
         .stepCount, .flightsClimbed, .swimmingStrokeCount, .physicalEffort,
+        .heartRateRecoveryOneMinute, .cyclingFunctionalThresholdPower, .appleExerciseTime,
+        .workoutEffortScore, .estimatedWorkoutEffortScore,
     ]
+
+    /// Types recorded just after the workout ends (heart rate recovery) or attached to it by a
+    /// relationship rather than an association (effort scores): their fallback window extends past the end.
+    static let postWorkoutTypes: Set<HKQuantityTypeIdentifier> = [.heartRateRecoveryOneMinute, .workoutEffortScore, .estimatedWorkoutEffortScore]
+    static let postWorkoutWindow: TimeInterval = 15 * 60
+
+    /// kcal/(kg·hr), built from units (no string parsing: `HKUnit(from:)` raises on an invalid string).
+    static let metUnit = HKUnit.kilocalorie().unitDivided(by: HKUnit.gramUnit(with: .kilo).unitMultiplied(by: .hour()))
 
     static var readTypes: Set<HKObjectType> {
         var types: Set<HKObjectType> = [HKObjectType.workoutType(), HKSeriesType.workoutRoute()]
@@ -86,7 +114,11 @@ nonisolated final class HealthArchiveReader: @unchecked Sendable {
         case .runningVerticalOscillation: return .meterUnit(with: .centi)
         case .runningGroundContactTime: return .secondUnit(with: .milli)
         case .stepCount, .flightsClimbed, .swimmingStrokeCount: return .count()
-        case .physicalEffort: return HKUnit(from: "kcal/hr·kg")
+        case .physicalEffort: return metUnit
+        case .heartRateRecoveryOneMinute: return HKUnit.count().unitDivided(by: .minute())
+        case .cyclingFunctionalThresholdPower: return .watt()
+        case .appleExerciseTime: return .minute()
+        case .workoutEffortScore, .estimatedWorkoutEffortScore: return .appleEffortScore()
         default: return nil
         }
     }
@@ -94,7 +126,7 @@ nonisolated final class HealthArchiveReader: @unchecked Sendable {
     /// Fallback candidates for quantities of unknown type (metadata, future types).
     static let candidateUnits: [HKUnit] = [
         HKUnit.count().unitDivided(by: .minute()), .meter(), HKUnit.meter().unitDivided(by: .second()), .kilocalorie(), .watt(),
-        .degreeCelsius(), .percent(), .count(), .second(), HKUnit(from: "kcal/hr·kg"), .gram(), .pascal(), .decibelAWeightedSoundPressureLevel(),
+        .degreeCelsius(), .percent(), .count(), .second(), metUnit, .appleEffortScore(), .gram(), .pascal(), .decibelAWeightedSoundPressureLevel(),
         .literUnit(with: .milli).unitDivided(by: HKUnit.gramUnit(with: .kilo).unitMultiplied(by: .minute())), .hertz(), .radianAngle(),
     ]
 
@@ -244,7 +276,15 @@ nonisolated final class HealthArchiveReader: @unchecked Sendable {
     func readRoutes(of workout: HKWorkout, progress: @escaping @Sendable (String) -> Void) async throws -> [RouteExport] {
         let descriptor = HKSampleQueryDescriptor(predicates: [.workoutRoute(HKQuery.predicateForObjects(from: workout))],
                                                  sortDescriptors: [SortDescriptor(\.startDate)])
-        let routes = try await descriptor.result(for: store)
+        var routes = try await descriptor.result(for: store)
+        var association = "associatedWithWorkout"
+        if routes.isEmpty {
+            // Defensive: a route saved without association (some third-party apps) but recorded during the workout.
+            let window = HKQuery.predicateForSamples(withStart: workout.startDate.addingTimeInterval(-300), end: workout.endDate.addingTimeInterval(300),
+                                                     options: [.strictStartDate, .strictEndDate])
+            routes = try await HKSampleQueryDescriptor(predicates: [.workoutRoute(window)], sortDescriptors: [SortDescriptor(\.startDate)]).result(for: store)
+            association = "workoutTimeRange"
+        }
         var exports: [RouteExport] = []
         for (index, route) in routes.enumerated() {
             var points: [RoutePointExport] = []
@@ -262,7 +302,7 @@ nonisolated final class HealthArchiveReader: @unchecked Sendable {
             }
             progress("Route \(index + 1)/\(routes.count): \(points.count) points")
             exports.append(RouteExport(uuid: route.uuid, startDate: route.startDate, endDate: route.endDate, expectedPointCount: route.count,
-                                       metadata: Self.metadata(route.metadata), points: points, error: failure))
+                                       metadata: Self.metadata(route.metadata), points: points, error: failure, association: association))
         }
         return exports
     }
@@ -286,7 +326,9 @@ nonisolated final class HealthArchiveReader: @unchecked Sendable {
             var samples = try await HKSampleQueryDescriptor(predicates: [.quantitySample(type: type, predicate: predicate)],
                                                             sortDescriptors: [SortDescriptor(\.startDate)]).result(for: store)
             if samples.isEmpty {
-                predicate = HKQuery.predicateForSamples(withStart: workout.startDate, end: workout.endDate, options: [.strictStartDate, .strictEndDate])
+                predicate = Self.postWorkoutTypes.contains(identifier)
+                    ? HKQuery.predicateForSamples(withStart: workout.startDate, end: workout.endDate.addingTimeInterval(Self.postWorkoutWindow), options: [.strictStartDate])
+                    : HKQuery.predicateForSamples(withStart: workout.startDate, end: workout.endDate, options: [.strictStartDate, .strictEndDate])
                 strategy = .workoutTimeRange
                 samples = try await HKSampleQueryDescriptor(predicates: [.quantitySample(type: type, predicate: predicate)],
                                                             sortDescriptors: [SortDescriptor(\.startDate)]).result(for: store)

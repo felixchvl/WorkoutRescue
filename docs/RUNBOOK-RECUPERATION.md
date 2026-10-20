@@ -7,7 +7,12 @@
 
 - La Watch a accès à Internet par elle-même : réseau Wi-Fi déjà connu (icône Wi-Fi dans le Centre de contrôle)
   ou cellulaire actif. Rejoindre un nouveau réseau Wi-Fi depuis Réglages est possible mais c'est **ta** décision.
-- La Watch est chargée (> 50 %) et le restera pendant l'export.
+- La Watch est chargée (> 50 %), **portée au poignet et déverrouillée** pendant tout l'export : quand elle est
+  verrouillée (retirée du poignet), watchOS chiffre les données Santé et HealthKit refuse toute lecture
+  (l'app affiche alors « Health data is locked »).
+- Optionnel (ta décision, c'est un réglage de la montre) : Réglages → Général → Retour à l'horloge → WorkoutRescue
+  → « Après 1 heure », pour que l'app reste au premier plan si tu baisses le poignet pendant un long Export All.
+  Sans ce réglage, rien n'est perdu : l'export se met en pause, puis reprend (ou se relance en sautant ce qui est confirmé).
 - WorkoutRescue est installé depuis l'App Store **de la montre** (voir `docs/DISTRIBUTION.md`).
 
 ## 1. Démarrer le récepteur sur le Mac
@@ -19,6 +24,9 @@ python3 scripts/gen_token.py        # copier la valeur dans WR_TOKEN de .env
 ./run.sh                             # écoute sur 127.0.0.1:8787, stocke dans receiver/exports
 ```
 
+Dans un second terminal : `caffeinate -dimsu` (empêche le Mac de se mettre en veille pendant la récupération ;
+`Ctrl-C` pour arrêter).
+
 Vérifier : `curl -s http://127.0.0.1:8787/health` → `{"status": "ok"}`.
 
 ## 2. Exposer le récepteur en HTTPS (la Watch n'accepte que HTTPS avec un certificat valide)
@@ -27,8 +35,8 @@ Un `localhost` du Mac n'est **pas** joignable depuis la Watch. Choisir **une** o
 
 | Option | Commande / action | Remarques |
 |---|---|---|
-| Tailscale Funnel (Tailscale est déjà installé sur ce Mac) | `tailscale funnel 8787` | URL publique `https://<machine>.<tailnet>.ts.net` ; Funnel doit être autorisé dans la tailnet. La Watch n'a pas besoin de Tailscale. |
-| Cloudflare quick tunnel | `brew install cloudflared` puis `cloudflared tunnel --url http://127.0.0.1:8787` | URL aléatoire `https://xxx.trycloudflare.com` (longue à taper). Service tiers. |
+| **Tailscale Funnel — recommandé** (déjà installé sur ce Mac) | `tailscale funnel 8787` | URL publique `https://<machine>.<tailnet>.ts.net`. **Le TLS se termine sur ton Mac** : les relais Tailscale ne peuvent pas lire les données. Prérequis : MagicDNS + HTTPS activés et attribut `funnel` dans la politique de la tailnet (la CLI le propose). La Watch n'a pas besoin de Tailscale. |
+| Cloudflare quick tunnel | `brew install cloudflared` puis `cloudflared tunnel --url http://127.0.0.1:8787` | URL aléatoire `https://xxx.trycloudflare.com` (longue à taper). **Cloudflare déchiffre le trafic** à son edge : tes données de santé y transitent en clair. À éviter ici. |
 | Serveur personnel (VPS) + Caddy | `reverse_proxy 127.0.0.1:8787` dans le Caddyfile | Certificat Let's Encrypt automatique. Voir `receiver/README.md`. |
 
 Ces options **publient une URL sur Internet** : elle est protégée par le token (verrouillage après 10 échecs),

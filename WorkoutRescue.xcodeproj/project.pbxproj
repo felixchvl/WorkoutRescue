@@ -429,6 +429,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = WorkoutRescue;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "WorkoutRescue reads your workouts, GPS routes and workout metrics from Apple Health so you can send a copy to a server you choose. It never changes or deletes Health data.";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "WorkoutRescue never writes to Apple Health. It only reads your workouts so that you can export a copy.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKWatchOnly = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -465,6 +466,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = WorkoutRescue;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "WorkoutRescue reads your workouts, GPS routes and workout metrics from Apple Health so you can send a copy to a server you choose. It never changes or deletes Health data.";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "WorkoutRescue never writes to Apple Health. It only reads your workouts so that you can export a copy.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKWatchOnly = YES;
 				LD_RUNPATH_SEARCH_PATHS = (

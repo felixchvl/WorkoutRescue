@@ -29,6 +29,13 @@ Réponses : `201 stored`, `200 duplicate` (fichier identique déjà présent), `
 pour le même entraînement : stocké à côté, **rien n'est écrasé**), `400 sha256_mismatch|incomplete_body|invalid_json|uuid_mismatch`,
 `401`, `404`, `411`, `413`, `415`, `429` (verrouillage après 10 échecs d'authentification en 10 min), `500`.
 
+## Mode démo-seulement (endpoint pour App Review)
+
+`WR_DEMO_ONLY=1 ./run.sh` (ou `--demo-only`) : le récepteur n'accepte que les entraînements **fictifs** du mode Démo
+de l'app (UUID `D3E00000-0000-4000-8000-…` et `isDemoData = true`). Toute autre donnée est refusée en `403
+demo_only_receiver` avant d'être écrite : un examinateur peut tester l'export de bout en bout sans qu'aucune vraie
+donnée de santé ne puisse arriver chez toi. Utiliser un **autre token** et un **autre dossier** que pour ta récupération.
+
 ## Stockage
 
 ```
@@ -90,6 +97,6 @@ global (un attaquant peut bloquer l'accès 10 min ; il suffit alors de redémarr
 ## Tests
 
 ```bash
-python3 -m unittest discover -s tests -v     # 17 tests API
+python3 -m unittest discover -s tests -v     # 18 tests API
 ../scripts/e2e.sh                            # client Swift réel → serveur → verify.py
 ```

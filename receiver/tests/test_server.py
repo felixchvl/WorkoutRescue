@@ -187,6 +187,23 @@ class ReceiverTest(unittest.TestCase):
         # The retry then succeeds.
         self.assertEqual(self.upload(body=body)[0], 201)
 
+    def test_demo_only_mode_accepts_only_fictional_workouts(self):
+        self.httpd.cfg.demo_only = True
+        demo = "D3E00000-0000-4000-8000-000000000001"
+        doc = json.loads(workout_json(uuid=demo))
+        doc["isDemoData"] = True
+        status, receipt = self.upload(body=json.dumps(doc).encode(), uuid=demo)
+        self.assertEqual((status, receipt["status"]), (201, "stored"))
+        self.assertEqual(self.upload("route", uuid=demo)[0], 201)
+        # A real workout UUID is refused before the body is read; a demo UUID claiming real data too.
+        self.assertEqual(self.upload()[1], {"error": "demo_only_receiver"})
+        doc["isDemoData"] = False
+        doc["workout"]["uuid"] = "D3E00000-0000-4000-8000-000000000002"
+        status, payload = self.upload(body=json.dumps(doc).encode(), uuid="D3E00000-0000-4000-8000-000000000002")
+        self.assertEqual((status, payload), (403, {"error": "demo_only_receiver"}))
+        self.assertFalse((self.root / UUID).exists())
+        self.assertTrue(self.request("GET", "/api/ping")[1]["demo_only"])
+
     def test_short_token_refused_at_startup(self):
         with self.assertRaises(ValueError):
             server.Config("short", self.root)

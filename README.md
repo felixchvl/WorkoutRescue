@@ -58,7 +58,7 @@ Le dossier de build SwiftPM doit être hors du dépôt (`--scratch-path`, déjà
 | JSON v2 (round-trip, µs, NaN, métadonnées typées) | ✅ | ✅ | ✅ 32 tests unitaires | ❌ | ❌ |
 | GPX 1.1 (XML, échappement, multi-routes, points invalides, 30 000 points) | ✅ | ✅ | ✅ | ❌ | ❌ |
 | Client HTTPS (401, 500, timeout, coupure, retry, intégrité) | ✅ | ✅ | ✅ (stubs) + ✅ intégration réelle | ❌ | ❌ |
-| Récepteur + vérification | ✅ | n/a | ✅ 17 tests API + bout en bout | n/a | n/a |
+| Récepteur + vérification | ✅ | n/a | ✅ 18 tests API + bout en bout | n/a | n/a |
 | UI watchOS | ✅ | ✅ | ❌ | ❌ | ❌ |
 | Archive App Store | structure ✅ | ✅ Release | — | — | signature ❌ (compte inactif) |
 
