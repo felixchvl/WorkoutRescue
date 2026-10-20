@@ -12,10 +12,12 @@ Légende : ✅ fait et vérifié · 🔶 préparé, à confirmer · ⬜ à faire
 - ✅ `PrivacyInfo.xcprivacy` (UserDefaults CA92.1, pas de pistage, pas de collecte)
 - ✅ Icône 1024×1024 opaque intégrée dans `Assets.car`
 - ✅ Build Debug + Release, archive non signée structurellement correcte
-- ⬜ Archive **signée** + *Validate App* (nécessite l'équipe payante)
+- ⬜ Archive **signée** + *Validate App* (nécessite l'accès à l'équipe de Bahey)
 
 ## Compte (après activation — chaque étape avec ton feu vert)
-- ⬜ Remplacer l'équipe personnelle `LJUBJ5GTAT` par l'équipe payante (2 cibles)
+- ⬜ Accepter l'invitation de Bahey (à réémettre vers l'adresse principale du compte Apple : bloquée sur `chevalierfelix@icloud.com`)
+- ⬜ Obtenir le rôle Admin ou App Manager + accès Certificates, Identifiers & Profiles
+- ⬜ Remplacer l'équipe personnelle `LJUBJ5GTAT` par l'équipe de Bahey (2 cibles)
 - ⬜ App IDs + capacité HealthKit (signature automatique)
 - ⬜ Fiche App Store Connect (nom disponible ? bundle ID, SKU)
 - ⬜ Upload du build

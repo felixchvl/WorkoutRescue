@@ -19,9 +19,21 @@
 
 ## Points d'attention avant la signature
 
-1. **Équipe** : le projet référence `DEVELOPMENT_TEAM = LJUBJ5GTAT`, qui est l'équipe **personnelle gratuite**
-   (« Félix Chevalier (Personal Team) »). Une fois l'abonnement actif, sélectionner l'équipe payante dans
-   *Signing & Capabilities* pour les **deux** cibles (`WorkoutRescue` et `WorkoutRescue Watch App`).
+1. **Équipe — décision du 2026-10-20 : publication via l'équipe Apple Developer de Bahey Shalash** (invitation
+   App Store Connect reçue le 2026-10-19, voulue). Conséquences :
+   - l'app est publiée sous le **nom de vendeur de cette équipe**, pas sous le tien ;
+   - `DEVELOPMENT_TEAM` = **Team ID de l'équipe de Bahey** (à relever dans Xcode → Settings → Accounts une fois
+     l'invitation acceptée). Le projet référence encore `LJUBJ5GTAT` (ton équipe **personnelle gratuite**) :
+     sélectionner l'équipe de Bahey dans *Signing & Capabilities* pour les **deux** cibles ;
+   - rôle requis : **Admin**, ou **App Manager** avec l'accès *Certificates, Identifiers & Profiles* ;
+     sinon impossible de créer la fiche de l'app, les App IDs avec HealthKit et les profils de distribution ;
+   - les accords « Paid/Free Apps » doivent être acceptés par le titulaire du compte (Account Holder = Bahey) ;
+   - la politique de confidentialité et les notes App Review doivent désigner le bon éditeur et un contact joignable.
+   - **Blocage constaté le 2026-10-20** : l'invitation est adressée à `chevalierfelix@icloud.com`. En cliquant
+     « Sign in with Apple Account », Apple redirige vers « Create Your Apple Account » (vérifié dans un navigateur
+     sans extension) : cette adresse n'est pas reconnue comme identifiant principal d'un compte Apple. Correctif :
+     Bahey supprime l'invitation en attente et réinvite l'adresse principale de ton compte Apple. Ne pas créer de
+     nouveau compte Apple depuis cette page.
 2. **Bundle IDs** : ne pas les changer. Si App Store Connect répond qu'un identifiant « n'est pas disponible »
    (enregistré ailleurs), solution de repli : `com.felixchevalier.workoutrescue2` + `…workoutrescue2.watchkitapp`
    (à décider avec toi).
@@ -34,9 +46,9 @@
 
 ## Procédure le jour où le compte est actif (chaque étape « compte » attend ton feu vert)
 
-1. **Xcode → Settings → Accounts** : vérifier que l'Apple ID apparaît avec l'équipe payante (Team ID ≠ LJUBJ5GTAT).
+1. **Xcode → Settings → Accounts** : vérifier que ton Apple ID apparaît avec l'équipe de Bahey et ton rôle (Team ID ≠ LJUBJ5GTAT).
 2. Ouvrir `WorkoutRescue.xcodeproj` → cible **WorkoutRescue Watch App** → *Signing & Capabilities* :
-   *Automatically manage signing* ✓, Team = équipe payante. Vérifier que la capacité **HealthKit** est listée
+   *Automatically manage signing* ✓, Team = équipe de Bahey. Vérifier que la capacité **HealthKit** est listée
    (entitlement `com.apple.developer.healthkit` déjà présent dans `WorkoutRescue.entitlements`). Pas de
    *Clinical Health Records*, pas de *Background Delivery*.
 3. Même chose sur la cible **WorkoutRescue** (container).
@@ -44,7 +56,7 @@
    ```bash
    xcodebuild archive -project WorkoutRescue.xcodeproj -scheme "WorkoutRescue Watch App" \
      -destination 'generic/platform=watchOS' -archivePath build/WorkoutRescue.xcarchive \
-     -allowProvisioningUpdates DEVELOPMENT_TEAM=<PAID_TEAM_ID>
+     -allowProvisioningUpdates DEVELOPMENT_TEAM=<TEAM_ID_BAHEY>
    ```
    (`-allowProvisioningUpdates` crée les App IDs/profils sur le compte : **action compte**.)
 5. Contrôles locaux de l'archive :
@@ -56,7 +68,7 @@
 6. **App Store Connect → Apps → +** : plateforme iOS (une app Watch-only est enregistrée via son container),
    nom, langue principale, bundle ID `com.felixchevalier.WorkoutRescue`, SKU `workoutrescue-001`. *(action compte)*
 7. Validation puis envoi : Organizer → *Validate App*, puis *Distribute App → App Store Connect → Upload*.
-   En ligne de commande : `docs/ExportOptions-AppStore.plist` (remplacer `PAID_TEAM_ID` ; `destination=export`
+   En ligne de commande : `docs/ExportOptions-AppStore.plist` (remplacer `TEAM_ID_BAHEY` ; `destination=export`
    par défaut, passer à `upload` seulement après ton accord). *(action compte)*
 8. Métadonnées : textes `AppStore/description-*.md`, `keywords.md`, catégorie **Health & Fitness**
    (secondaire : Utilities), prix gratuit, URL de confidentialité/support, étiquette de confidentialité
