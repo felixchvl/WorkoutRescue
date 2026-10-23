@@ -131,6 +131,14 @@ def summary(doc):
     }
 
 
+def indoor_flag(doc):
+    """HKMetadataKeyIndoorWorkout as recorded by the watch (False when absent)."""
+    value = doc["workout"].get("metadata", {}).get("HKIndoorWorkout")
+    if isinstance(value, dict):
+        value = value.get("value")
+    return bool(value)
+
+
 def to_tcx(doc, points):
     s = summary(doc)
     sport = TCX_SPORT.get(s["activity"], "Other")
@@ -181,11 +189,20 @@ def to_fit(doc, points, path):
     from fit_tool.profile.messages.lap_message import LapMessage
     from fit_tool.profile.messages.record_message import RecordMessage
     from fit_tool.profile.messages.session_message import SessionMessage
-    from fit_tool.profile.profile_type import Event, EventType, FileType, Manufacturer, Sport
+    from fit_tool.profile.profile_type import Event, EventType, FileType, Manufacturer, Sport, SubSport
 
     s = summary(doc)
     sport = {13: Sport.CYCLING, 37: Sport.RUNNING, 52: Sport.WALKING, 24: Sport.HIKING, 46: Sport.SWIMMING}.get(
         s["activity"], getattr(Sport, {41: "SOCCER", 9: "ROCK_CLIMBING"}.get(s["activity"], "GENERIC"), Sport.GENERIC))
+    # Indoor/outdoor as recorded by the watch (HKMetadataKeyIndoorWorkout). Without this, importers
+    # guess "indoor" whenever the route is missing (e.g. routes purged by the watch).
+    indoor = indoor_flag(doc)
+    if s["activity"] == 13:
+        sub_sport = SubSport.INDOOR_CYCLING if indoor else SubSport.ROAD
+    elif s["activity"] == 37:
+        sub_sport = SubSport.TREADMILL if indoor else SubSport.STREET
+    else:
+        sub_sport = SubSport.GENERIC
     ms = lambda dt: int(dt.timestamp() * 1000)
     builder = FitFileBuilder(auto_define=True, min_string_size=50)
 
@@ -245,6 +262,7 @@ def to_fit(doc, points, path):
         if s["hr_max"]:
             m.max_heart_rate = int(round(s["hr_max"]))
         m.sport = sport
+        m.sub_sport = sub_sport
         if cls is SessionMessage:
             m.first_lap_index = 0
             m.num_laps = 1
