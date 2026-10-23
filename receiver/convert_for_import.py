@@ -278,7 +278,10 @@ def to_fit(doc, points, path):
 
 def main(argv):
     src, dst = Path(argv[1]), Path(argv[2])
-    dst.mkdir(parents=True, exist_ok=True)
+    # Same workouts in two formats: keep them apart so nobody imports both (duplicates).
+    fit_dir, tcx_dir = dst / "FIT - pour HealthFit", dst / "TCX - autres apps (ne pas importer en plus)"
+    fit_dir.mkdir(parents=True, exist_ok=True)
+    tcx_dir.mkdir(parents=True, exist_ok=True)
     try:
         import fit_tool  # noqa: F401
         want_fit = True
@@ -292,9 +295,9 @@ def main(argv):
         s = summary(doc)
         points = build_points(doc)
         stem = f'{s["start"].astimezone():%Y-%m-%d_%H%M}_{s["activity_name"].replace(" ", "")}'
-        (dst / f"{stem}.tcx").write_bytes(to_tcx(doc, points))
+        (tcx_dir / f"{stem}.tcx").write_bytes(to_tcx(doc, points))
         if want_fit:
-            to_fit(doc, points, dst / f"{stem}.fit")
+            to_fit(doc, points, fit_dir / f"{stem}.fit")
         gps = sum(1 for p in points if "lat" in p)
         hr = sum(1 for p in points if p.get("hr"))
         print(f"{stem}: {len(points)} points, GPS {gps}, FC {hr}")
