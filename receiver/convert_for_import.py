@@ -10,15 +10,16 @@ Usage:
   python3 convert_for_import.py EXPORT_DIR OUTPUT_DIR            # TCX only
   uv run --with fit-tool python3 convert_for_import.py EXPORT_DIR OUTPUT_DIR   # TCX + FIT
 
-Each trackpoint is placed on a GPS point (or, without GPS, on a heart rate sample) and carries
-the most recent heart rate / cadence / power reading of the previous 15 seconds. Distance is the
+Trackpoints are placed on every GPS point and on every second holding a heart rate, cadence or
+power sample (so no sample is dropped outside GPS coverage); each carries the most recent reading
+of the previous 15 seconds. Distance is the
 running sum of HealthKit distance samples when present, otherwise computed from the GPS points.
 """
 import bisect
 import json
 import math
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from xml.sax.saxutils import escape
 
@@ -29,6 +30,11 @@ TCX_SPORT = {13: "Biking", 37: "Running"}
 
 def parse_time(text):
     return datetime.fromisoformat(text.replace("Z", "+00:00"))
+
+
+def whole_second(dt):
+    """FIT has 1-second resolution: always truncate, never round, so times stay consistent."""
+    return dt.replace(microsecond=0)
 
 
 def iso(dt):
@@ -87,26 +93,35 @@ def build_points(doc):
     gps = [p for r in doc.get("routes", []) for p in r["points"]
            if p["horizontalAccuracy"] >= 0 and -90 <= p["latitude"] <= 90 and -180 <= p["longitude"] <= 180]
     points = []
-    if gps:
-        previous, run = None, 0.0
-        for p in gps:
-            here = (p["latitude"], p["longitude"])
-            if previous:
-                run += haversine(previous, here)
-            previous = here
-            points.append({"time": parse_time(p["timestamp"]), "lat": p["latitude"], "lon": p["longitude"],
-                           "alt": p["altitude"] if p["verticalAccuracy"] >= 0 else None,
-                           "speed": p["speed"] if p["speed"] >= 0 else None, "gps_distance": run})
-    else:
-        points = [{"time": t} for t in hr.times]
+    previous, run = None, 0.0
+    for p in gps:
+        here = (p["latitude"], p["longitude"])
+        if previous:
+            run += haversine(previous, here)
+        previous = here
+        points.append({"time": parse_time(p["timestamp"]), "lat": p["latitude"], "lon": p["longitude"],
+                       "alt": p["altitude"] if p["verticalAccuracy"] >= 0 else None,
+                       "speed": p["speed"] if p["speed"] >= 0 else None, "gps_distance": run})
+    # Every heart rate / cadence / power sample gets a record in its own second, even before the GPS
+    # fix, after the route ends or during a GPS gap: such records simply have no position.
+    taken = {whole_second(pt["time"]) for pt in points}
+    for channel in (hr, cadence, power):
+        for when in channel.times:
+            sec = whole_second(when)
+            if sec not in taken:
+                taken.add(sec)
+                points.append({"time": sec})
+    points.sort(key=lambda pt: pt["time"])
     if not points:
         # Summary-only workout (details purged by the watch): start and end only, no invented samples.
         s = summary(doc)
         return [{"time": s["start"], "distance": 0.0, "hr": None, "cadence": None, "power": None},
                 {"time": s["end"], "distance": s["distance"], "hr": None, "cadence": None, "power": None}]
 
+    last_gps_distance = None
     for pt in points:
-        t = pt["time"]
+        # Value of the latest sample up to the end of this record's second.
+        t = whole_second(pt["time"]) + timedelta(microseconds=999_999)
         pt["hr"] = hr.at(t)
         pt["cadence"] = cadence.at(t)
         pt["power"] = power.at(t)
@@ -114,7 +129,8 @@ def build_points(doc):
             i = bisect.bisect_right(dist_times, t) - 1
             pt["distance"] = cumulative[i][1] if i >= 0 else 0.0
         else:
-            pt["distance"] = pt.get("gps_distance")
+            last_gps_distance = pt.get("gps_distance", last_gps_distance)
+            pt["distance"] = last_gps_distance
     return points
 
 
@@ -203,7 +219,7 @@ def to_fit(doc, points, path):
         sub_sport = SubSport.TREADMILL if indoor else SubSport.STREET
     else:
         sub_sport = SubSport.GENERIC
-    ms = lambda dt: int(dt.timestamp() * 1000)
+    ms = lambda dt: int(whole_second(dt).timestamp()) * 1000
     builder = FitFileBuilder(auto_define=True, min_string_size=50)
 
     fid = FileIdMessage()
