@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chronologie des déplacements</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+:root { --bg:#f6f6f4; --card:#fff; --text:#1d1d1f; --muted:#6e6e73; --line:#e3e3e0; --velo:#1f8a4c; --autre:#7a7a80; --saut:#d32f2f; }
+@media (prefers-color-scheme: dark) { :root { --bg:#161617; --card:#1f1f21; --text:#f2f2f2; --muted:#a1a1a6; --line:#333336; } }
+* { box-sizing:border-box; } body { margin:0; background:var(--bg); color:var(--text); font:15px/1.45 -apple-system, system-ui, sans-serif; }
+header { position:sticky; top:0; z-index:1000; background:var(--card); border-bottom:1px solid var(--line); padding:10px 16px; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+h1 { font-size:17px; margin:0 10px 0 0; } select, button { font:inherit; padding:6px 10px; border-radius:8px; border:1px solid var(--line); background:var(--bg); color:var(--text); }
+.legend { font-size:12.5px; color:var(--muted); } .legend b { display:inline-block; width:18px; height:4px; vertical-align:middle; margin:0 4px 0 10px; }
+main { display:grid; grid-template-columns:1fr 360px; height:calc(100vh - 56px); } #map { height:100%; }
+aside { overflow:auto; padding:12px 14px; border-left:1px solid var(--line); background:var(--card); }
+@media (max-width: 800px) { main { grid-template-columns:1fr; height:auto; } #map { height:55vh; } aside { border-left:none; } }
+.row { padding:6px 0; border-bottom:1px solid var(--line); font-size:13.5px; } .row .k { font-weight:600; }
+.sus { color:var(--saut); } .muted { color:var(--muted); font-size:12.5px; }
+</style></head><body>
+<header><h1>Chronologie</h1><button id="prev">◀</button><select id="day"></select><button id="next">▶</button>
+<label class="muted"><input type="checkbox" id="only"> jours avec un saut seulement</label>
+<span class="legend"><b style="background:#1f8a4c"></b>vélo<b style="background:#7a7a80"></b>autre trajet<b style="background:#d32f2f"></b>saut (déplacement non enregistré ?) · ● lieu</span></header>
+<main><div id="map"></div><aside id="side"></aside></main>
+<script>
+const DAYS = __DATA__;
+const names = Object.keys(DAYS);
+const sel = document.getElementById("day"), only = document.getElementById("only");
+const map = L.map("map"); L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {maxZoom:19, attribution:"© OpenStreetMap"}).addTo(map);
+let layer = L.layerGroup().addTo(map);
+const fmt = d => new Date(d + "T12:00:00").toLocaleDateString("fr-FR", {weekday:"short", day:"2-digit", month:"2-digit"});
+function fill() {
+  const keep = names.filter(d => !only.checked || DAYS[d].suspects.some(s => s.km * 1000 > 400));
+  const cur = sel.value; sel.innerHTML = keep.map(d => `<option value="${d}">${fmt(d)} — ${DAYS[d].suspects.filter(s => s.km*1000 > 400).length} saut(s)</option>`).join("");
+  if (keep.includes(cur)) sel.value = cur; draw();
+}
+function draw() {
+  const d = DAYS[sel.value]; if (!d) return; layer.clearLayers(); const pts = [];
+  for (const it of d.items) {
+    if (it.kind === "lieu") { const p = it.path[0]; pts.push(p); L.circleMarker(p, {radius:5, color:"#1565c0", fillOpacity:.7, weight:1}).bindTooltip(`Lieu ${it.t}`).addTo(layer); }
+    else { pts.push(...it.path); L.polyline(it.path, {color: it.kind === "velo" ? "#1f8a4c" : "#7a7a80", weight:4, opacity:.85}).bindTooltip(`${it.kind === "velo" ? "Vélo" : "Trajet"} ${it.t}`).addTo(layer); }
+  }
+  for (const s of d.suspects) if (s.km * 1000 > 400) { pts.push(s.from, s.to);
+    L.polyline([s.from, s.to], {color:"#d32f2f", weight:3, dashArray:"7 6"}).bindTooltip(`${s.from_time} → ${s.to_time} : ${s.km} km sans trajet enregistré`).addTo(layer); }
+  if (pts.length) map.fitBounds(L.latLngBounds(pts), {padding:[20,20]});
+  const rows = [];
+  for (const it of d.items) rows.push({t: it.t.slice(0,5), html:`<div class="row"><span class="k">${it.t}</span> · ${it.kind === "lieu" ? "Lieu" : it.kind === "velo" ? "🚲 Vélo (dans Santé)" : "Autre trajet"}</div>`});
+  for (const s of d.suspects) rows.push({t: s.from_time, html: s.km * 1000 > 400
+    ? `<div class="row sus"><span class="k">${s.from_time} → ${s.to_time}</span> · saut de ${s.km} km en ${s.minutes} min${s.kmh ? ` (${s.kmh} km/h)` : ""}<div class="muted">${s.hint}</div></div>`
+    : `<div class="row"><span class="k">${s.from_time} → ${s.to_time}</span> · <span class="muted">${s.minutes} min sans données, sur place</span></div>`});
+  rows.sort((a, b) => a.t.localeCompare(b.t));
+  document.getElementById("side").innerHTML = `<div class="muted">${fmt(sel.value)}</div>` + rows.map(r => r.html).join("");
+}
+sel.addEventListener("change", draw); only.addEventListener("change", fill);
+document.getElementById("prev").onclick = () => { if (sel.selectedIndex > 0) { sel.selectedIndex--; draw(); } };
+document.getElementById("next").onclick = () => { if (sel.selectedIndex < sel.options.length - 1) { sel.selectedIndex++; draw(); } };
+fill();
+</script></body></html>
