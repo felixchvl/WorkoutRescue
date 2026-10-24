@@ -217,10 +217,14 @@ def main(argv):
         if trip["watch_overlap"]:
             ws = watch_summary(watch_dir, trip["watch_overlap"][0]["uuid"])
             if ws:
-                pts = [p for p in pts if ws["start"] - timedelta(seconds=60) <= p["t"] <= ws["end"] + timedelta(seconds=60)] or pts
+                # Records must lie inside the session (points before its start made HealthFit crash).
+                pts = [p for p in pts if ws["start"] <= p["t"] <= ws["end"]] or pts
                 summary.update({k: v for k, v in ws.items() if v is not None})
                 summary["avg_speed_ms"] = summary["distance_m"] / summary["moving_s"] if summary["moving_s"] else 0.0
                 origin = "Arc + résumé montre"
+        # Never let a record fall outside the session window.
+        summary["start"] = min(summary["start"], pts[0]["t"])
+        summary["end"] = max(summary["end"], pts[-1]["t"])
         local = summary["start"].astimezone(PARIS)
         name = f"{local:%Y-%m-%d_%H%M}_Velo_reconstitue.fit"
         write_fit(out / name, pts, summary)
