@@ -92,6 +92,10 @@ def build_points(trip, matched, use_repaired):
         p["dist"] = dist
         if 0 < dt <= 60 and d / dt * 3.6 >= MOVING_KMH:
             moving += dt
+    # Computed speeds (snapped / added points) never exceed what the iPhone actually measured on
+    # this ride (+10 %), or a city-bike ceiling when nothing was measured.
+    measured = sorted(p["sensor_speed"] for p in pts if p["sensor_speed"] is not None)
+    cap = min(MAX_SPEED_MS, measured[int(len(measured) * 0.98)] * 1.1) if measured else 12.0
     # Speed: distance over a centred window of at least MIN_WINDOW_S (two GPS fixes a fraction of a
     # second apart would otherwise give absurd values), capped at a plausible bike speed.
     for i, p in enumerate(pts):
@@ -102,7 +106,7 @@ def build_points(trip, matched, use_repaired):
             if k < len(pts) - 1:
                 k += 1
         dt = (pts[k]["t"] - pts[j]["t"]).total_seconds()
-        computed = min(MAX_SPEED_MS, (pts[k]["dist"] - pts[j]["dist"]) / dt) if dt > 0 else 0.0
+        computed = min(cap, (pts[k]["dist"] - pts[j]["dist"]) / dt) if dt > 0 else 0.0
         p["speed"] = p["sensor_speed"] if p["sensor_speed"] is not None else computed
     return pts, dist, moving
 
