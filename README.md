@@ -1,74 +1,80 @@
 # WorkoutRescue
 
-App **Apple Watch indépendante (Watch-only)** pour récupérer les entraînements stockés dans HealthKit sur la montre
-(routes GPS, fréquence cardiaque, puissance, cadence, métadonnées…) et les envoyer directement en HTTPS vers un
-serveur que tu contrôles — sans iPhone, sans WatchConnectivity.
+Standalone (**watch-only**) Apple Watch app that reads the workouts stored in HealthKit on the watch (GPS routes,
+heart rate, power, cadence, metadata…) and sends them over HTTPS to a server you control — no iPhone, no
+WatchConnectivity. It was built to get workouts off an Apple Watch whose pairing with its iPhone broke.
 
-## Garantie de non-destruction
+**Status (2026-10-28):** approved on the App Store on 2026-10-22 (published through Bahey Shalash's developer team,
+`JDP856P5D5`). Used for real on 2026-10-22: 27 workouts (13 → 22 Oct 2026) recovered, checked by
+`receiver/verify.py` (0 problems) and imported into Health through HealthFit. The 94 rides of the gap before that
+(11 Sep → 14 Oct) were rebuilt from Arc Timeline with `reconstruct/`.
 
-- HealthKit en **lecture seule** : `requestAuthorization(toShare: [], read: …)`, uniquement des requêtes
+## What it can and cannot recover: the ~8-day window
+
+The main finding of the real recovery, worth knowing before trying again:
+
+- **watchOS only lets an app read HealthKit data newer than `HKHealthStore.earliestPermittedSampleDate()`.** On an
+  Apple Watch Ultra 2 (watchOS 26) that was about **8 days** for samples (heart rate, distance, routes) and about
+  **9 days** for `HKWorkout` objects. The app's queries have no date predicate; the cut-off comes from the OS.
+- **The window slides every day.** Run *Export All* as soon as possible: every day of delay is a day of workouts the
+  API will never return again.
+- Older workouts are returned by **no** App Store app, this one included. Here the pairing broke at the end of July
+  and the workouts from 1 Sep to 13 Oct were unreadable. Whether watchOS deletes them or keeps them waiting for a
+  sync is not documented; the watch still showed ~130 MB of Health data (Settings → General → Storage), more than
+  8 days should take.
+- **A workout that straddles the cut-off comes back truncated:** the ride of 14 Oct 19:33 came back with 250 m
+  instead of 4.3 km because its first samples were already out of the window.
+- Dead ends: watchOS 27's `earliestAuthorizedSampleDate(for:)` only reports the start of a *limited* access the
+  user granted, it does not widen the window; the watch's system date cannot be changed.
+- What worked for the gap: another recording of the same rides (Arc Timeline locations, map-matched with a local
+  OSRM, see `reconstruct/`). No heart rate is invented for rebuilt rides.
+
+## Non-destruction guarantee
+
+- HealthKit is **read-only**: `requestAuthorization(toShare: [], read: …)` and queries only
   (`HKSampleQueryDescriptor`, `HKWorkoutRouteQueryDescriptor`, `HKQuantitySeriesSampleQueryDescriptor`).
-  Aucun `save`, `delete`, `HKWorkoutSession`, `HKWorkoutBuilder` dans le code (`grep` le confirme).
-- Aucune donnée ne quitte la montre sans un geste explicite (boutons Export), et seulement vers l'adresse saisie.
-- Le récepteur n'écrase et ne supprime jamais un fichier.
+  No `save`, `delete`, `HKWorkoutSession` or `HKWorkoutBuilder` in the code (`grep` confirms it).
+- No data leaves the watch without an explicit tap (Export buttons), and only to the address typed in Settings.
+- The receiver never overwrites or deletes a file.
+- Recovered data never goes into git: `receiver/exports/`, `receiver/.env` and logs are ignored.
 
-## Où trouver quoi
+## Where to find what
 
-| Chemin | Contenu |
+| Path | Content |
 |---|---|
-| `WorkoutRescue Watch App/Shared/` | code portable (modèle JSON v2, GPX, client HTTPS, pipeline, registre, démo) — compilé dans l'app **et** testé sur macOS |
-| `WorkoutRescue Watch App/Core/` | HealthKit (lecture seule), Keychain, journal, état de l'app |
-| `WorkoutRescue Watch App/Views/` | écrans SwiftUI watchOS |
-| `Tests/WorkoutRescueCoreTests/` | tests XCTest exécutés par `swift test` (macOS) |
-| `WorkoutRescue Watch AppTests/` | tests spécifiques watchOS/HealthKit (nécessitent un simulateur watchOS ≥ 26) |
-| `receiver/` | serveur de réception Python (stdlib), vérificateur d'intégrité, tests |
+| `WorkoutRescue Watch App/Shared/` | portable code (JSON v2 model, GPX, HTTPS client, pipeline, registry, demo) — built into the app **and** tested on macOS |
+| `WorkoutRescue Watch App/Core/` | HealthKit (read-only), Keychain, log, app state |
+| `WorkoutRescue Watch App/Views/` | watchOS SwiftUI screens |
+| `Tests/WorkoutRescueCoreTests/` | XCTest suite run by `swift test` (macOS) |
+| `WorkoutRescue Watch AppTests/` | watchOS/HealthKit tests (need a watchOS ≥ 26 simulator) |
+| `receiver/` | Python receiver (stdlib), integrity checker, JSON → FIT/TCX converter for HealthFit, tests |
+| `reconstruct/` | rebuild rides from Arc Timeline: trip extraction, OSRM map-matching, FIT generation, review pages |
 | `scripts/` | `test-all.sh`, `e2e.sh`, `make-icon.swift` |
-| `docs/` | procédure de récupération, schéma JSON, distribution |
-| `AppStore/` | textes FR/EN, mots-clés, politique de confidentialité, notes App Review, checklist |
+| `docs/` | recovery runbook, JSON schema, distribution procedure (in French) |
+| `AppStore/` | FR/EN texts, keywords, privacy policy, App Review notes, checklist |
 
-## Écrans
+## Screens
 
-Dashboard (nombre de workouts, dernier scan, état du récepteur, dernier export) → Workouts (liste du plus récent au
-plus ancien : type, date, durée, distance) → Détail (points GPS, échantillons cardiaques, avertissements, Export
-Workout / JSON / GPX) · Export All (séquentiel, saute les exports confirmés) · Settings (adresse, token, test de
-connexion, mode Démo) · Diagnostics (HealthKit / Export / Réseau).
+Dashboard (number of workouts, last scan, receiver status, last export) → Workouts (newest first: type, date,
+duration, distance) → Detail (GPS points, heart rate samples, warnings, Export Workout / JSON / GPX) · Export All
+(sequential, skips confirmed exports) · Settings (address, token, connection test, Demo mode) · Diagnostics
+(HealthKit / Export / Network).
 
-## Commandes
+## Commands
 
 ```bash
-./scripts/test-all.sh                       # swift test + tests récepteur + bout en bout
+./scripts/test-all.sh                       # swift test + receiver tests + end to end
 xcodebuild -project WorkoutRescue.xcodeproj -scheme "WorkoutRescue Watch App" \
   -configuration Release -destination 'generic/platform=watchOS' CODE_SIGNING_ALLOWED=NO build
-xcodebuild archive -project WorkoutRescue.xcodeproj -scheme "WorkoutRescue Watch App" \
-  -destination 'generic/platform=watchOS' -archivePath /tmp/WorkoutRescue.xcarchive CODE_SIGNING_ALLOWED=NO
 ```
 
-`Package.swift` à la racine sert uniquement de banc de test : il compile `WorkoutRescue Watch App/Shared` pour macOS
-avec la même isolation par défaut (`MainActor`) que la cible Xcode. Ouvrir explicitement `WorkoutRescue.xcodeproj`.
-Le dossier de build SwiftPM doit être hors du dépôt (`--scratch-path`, déjà fait par les scripts) : les attributs
-étendus du dossier Documents font échouer la signature ad hoc du bundle de test.
+`Package.swift` at the root is only a test bench: it builds `WorkoutRescue Watch App/Shared` for macOS with the same
+default isolation (`MainActor`) as the Xcode target. Open `WorkoutRescue.xcodeproj` explicitly. The SwiftPM build
+folder must live outside the repository (`--scratch-path`, already done by the scripts): extended attributes of an
+iCloud-synced folder break the ad hoc signing of the test bundle. Signing and upload: `SIGNING-FOR-BAHEY.md`.
 
-## État de vérification (2026-10-18)
+## Other known limits
 
-| Élément | Implémenté | Compilé | Testé (macOS / intégration) | Simulateur watchOS | Appareil réel |
-|---|---|---|---|---|---|
-| Liste des HKWorkout (tri récent → ancien) | ✅ | ✅ | — | ❌ runtime absent | ❌ |
-| Routes GPS (tous les lots, contrôle `route.count`) | ✅ | ✅ | logique d'export ✅ ; requête HealthKit non testable hors appareil | ❌ | ❌ |
-| Séries temporelles + expansion des séries | ✅ | ✅ | ❌ (HealthKit) | ❌ | ❌ |
-| JSON v2 (round-trip, µs, NaN, métadonnées typées) | ✅ | ✅ | ✅ 32 tests unitaires | ❌ | ❌ |
-| GPX 1.1 (XML, échappement, multi-routes, points invalides, 30 000 points) | ✅ | ✅ | ✅ | ❌ | ❌ |
-| Client HTTPS (401, 500, timeout, coupure, retry, intégrité) | ✅ | ✅ | ✅ (stubs) + ✅ intégration réelle | ❌ | ❌ |
-| Récepteur + vérification | ✅ | n/a | ✅ 18 tests API + bout en bout | n/a | n/a |
-| UI watchOS | ✅ | ✅ | ❌ | ❌ | ❌ |
-| Archive App Store | structure ✅ | ✅ Release | — | — | signature ❌ (compte inactif) |
-
-Le simulateur n'a pas pu être utilisé : seuls les runtimes watchOS 11.0/11.5 sont installés, alors que la cible
-minimale est watchOS 26 (le runtime watchOS 26/27, plusieurs Go, n'a pas été téléchargé).
-
-## Limites connues
-
-- Non validé sur appareil : autorisation HealthKit et profondeur réelle de l'historique sur une Watch au jumelage
-  cassé ; comportement réseau quand l'écran s'éteint (export au premier plan : garder le poignet levé ; une coupure
-  est rattrapée par les retries et la reprise d'Export All).
-- Données non exportées en v2 : voir `docs/JSON-SCHEMA.md`.
-- Upload en arrière-plan (`URLSession` background) non implémenté.
+- Export runs in the foreground: keep the wrist raised; a network drop is caught by the retries and by resuming
+  *Export All*. Background `URLSession` upload is not implemented.
+- Data not exported in v2: see `docs/JSON-SCHEMA.md`.
