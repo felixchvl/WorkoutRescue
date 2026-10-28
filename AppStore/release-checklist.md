@@ -15,7 +15,7 @@ Légende : ✅ fait et vérifié · 🔶 préparé, à confirmer · ⬜ à faire
 - ⬜ Archive **signée** + *Validate App* (nécessite l'accès à l'équipe de Bahey)
 
 ## Compte (après activation — chaque étape avec ton feu vert)
-- ⬜ Accepter l'invitation de Bahey (à réémettre vers l'adresse principale du compte Apple : bloquée sur `chevalierfelix@icloud.com`)
+- ⬜ Accepter l'invitation de Bahey (à réémettre vers l'adresse principale du compte Apple : bloquée sur une adresse secondaire)
 - ⬜ Obtenir le rôle Admin ou App Manager + accès Certificates, Identifiers & Profiles
 - ⬜ Remplacer l'équipe personnelle `LJUBJ5GTAT` par l'équipe de Bahey (2 cibles)
 - ⬜ App IDs + capacité HealthKit (signature automatique)

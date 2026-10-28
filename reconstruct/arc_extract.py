@@ -123,7 +123,7 @@ def main():
     ap.add_argument("backup", type=Path)
     ap.add_argument("out", type=Path)
     ap.add_argument("start", nargs="?", default="2026-08-31T22:00:00Z")  # 1 Sept 00:00 Paris
-    ap.add_argument("end", nargs="?", default="2026-10-14T10:00:00Z")    # after the 14/10 10:07 ride
+    ap.add_argument("end", nargs="?", default="2026-10-14T10:00:00Z")    # end of the gap to rebuild
     ap.add_argument("--watch-exports", type=Path, help="WorkoutRescue exports, to flag trips matching watch workouts")
     args = ap.parse_args()
     start, end = parse(args.start), parse(args.end)

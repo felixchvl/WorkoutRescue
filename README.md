@@ -5,9 +5,9 @@ heart rate, power, cadence, metadata…) and sends them over HTTPS to a server y
 WatchConnectivity. It was built to get workouts off an Apple Watch whose pairing with its iPhone broke.
 
 **Status (2026-10-28):** approved on the App Store on 2026-10-22 (published through Bahey Shalash's developer team,
-`JDP856P5D5`). Used for real on 2026-10-22: 27 workouts (13 → 22 Oct 2026) recovered, checked by
-`receiver/verify.py` (0 problems) and imported into Health through HealthFit. The 94 rides of the gap before that
-(11 Sep → 14 Oct) were rebuilt from Arc Timeline with `reconstruct/`.
+`JDP856P5D5`). Used for real the same week: 27 workouts recovered, checked by `receiver/verify.py` (0 problems) and
+imported into Health through HealthFit. The rides of the weeks before the window were rebuilt from Arc Timeline
+with `reconstruct/`.
 
 ## What it can and cannot recover: the ~8-day window
 
@@ -18,12 +18,12 @@ The main finding of the real recovery, worth knowing before trying again:
   **9 days** for `HKWorkout` objects. The app's queries have no date predicate; the cut-off comes from the OS.
 - **The window slides every day.** Run *Export All* as soon as possible: every day of delay is a day of workouts the
   API will never return again.
-- Older workouts are returned by **no** App Store app, this one included. Here the pairing broke at the end of July
-  and the workouts from 1 Sep to 13 Oct were unreadable. Whether watchOS deletes them or keeps them waiting for a
+- Older workouts are returned by **no** App Store app, this one included. In the case that led to this app, several
+  weeks of older workouts were unreadable. Whether watchOS deletes them or keeps them waiting for a
   sync is not documented; the watch still showed ~130 MB of Health data (Settings → General → Storage), more than
   8 days should take.
-- **A workout that straddles the cut-off comes back truncated:** the ride of 14 Oct 19:33 came back with 250 m
-  instead of 4.3 km because its first samples were already out of the window.
+- **A workout that straddles the cut-off comes back truncated:** one ride came back with 250 m instead of
+  4.3 km because its first samples were already out of the window.
 - Dead ends: watchOS 27's `earliestAuthorizedSampleDate(for:)` only reports the start of a *limited* access the
   user granted, it does not widen the window; the watch's system date cannot be changed.
 - What worked for the gap: another recording of the same rides (Arc Timeline locations, map-matched with a local

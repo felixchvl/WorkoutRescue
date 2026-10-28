@@ -29,7 +29,7 @@
      sinon impossible de créer la fiche de l'app, les App IDs avec HealthKit et les profils de distribution ;
    - les accords « Paid/Free Apps » doivent être acceptés par le titulaire du compte (Account Holder = Bahey) ;
    - la politique de confidentialité et les notes App Review doivent désigner le bon éditeur et un contact joignable.
-   - **Blocage constaté le 2026-10-20** : l'invitation est adressée à `chevalierfelix@icloud.com`. En cliquant
+   - **Blocage constaté le 2026-10-20** : l'invitation est adressée à une adresse secondaire du compte Apple. En cliquant
      « Sign in with Apple Account », Apple redirige vers « Create Your Apple Account » (vérifié dans un navigateur
      sans extension) : cette adresse n'est pas reconnue comme identifiant principal d'un compte Apple. Correctif :
      Bahey supprime l'invitation en attente et réinvite l'adresse principale de ton compte Apple. Ne pas créer de
